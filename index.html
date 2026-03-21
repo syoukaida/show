@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>非公式ファンサイト</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/style.css">
+
+  
+  </head>
+
+  <body>
+
+  <!-- ★ここ：グローバルメニュー -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">甲斐田晴 非公式ファンサイト</div>
+
+      <nav class="nav">
+        <a href="index.html" class="current-page">HOME</a>
+        <a href="playlists.html">PLAYLISTS</a>
+        <a href="about.html">ABOUT</a>
+        <a href="niji.html">NIJI</a>
+      </nav>
+
+      <div class="header-cta">
+        <a href="profile.html" class="cta-button">甲斐田晴とは？</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- heroはこの下 -->
+
+    
+ <section class="hero">
+  <picture>
+    <!-- スマホ用 -->
+    <source id="hero-sp" media="(max-width: 768px)">
+    <!-- PC用 -->
+    <img id="hero-pc" alt="ヒーロー画像">
+  </picture>
+</section>
+
+<section class="main">
+  
+<h2>曲の印象  <span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（AND検索）<br>
+      ・順不同（選んだ順番は反映しない）<br>
+・「曲の印象」選択時は印象の関連度順で結果を表示
+    </span></h2>
+<div id="featureGrid" class="feature-grid"></div>  
+<h2>活動形態（ユニットなど）  <span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（OR検索）<br>
+      ・どの項目も選択していない時にはオリジナル曲のみ表示<BR>
+    </span></h2>
+  
+  
+<!-- 通常ユニット -->
+<div id="unitButtons" class="group"></div>
+
+<!-- 歌ってみた専用行 -->
+ 
+<div id="specialUnitButtons" class="group">
+ 
+</div>
+   <div class="unit-mini">
+  <button id="unitSelectAll">全選択</button>
+  <button id="unitClearAll">全解除</button>
+</div>
+<h2>
+  曲の速さ
+  <span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（OR検索）<br>
+      ・分類<BR>
+      　　ゆっくり：〜100 BPM<br>
+     　　 中くらい：101〜139 BPM<br>
+     　　 速い：140〜179 BPM<br>
+     　　 かなり速い：180 BPM〜<br>
+    </span>
+  </span>
+</h2>
+<div id="bpmButtons" class="group"></div>  
+<h2>楽曲情報 <span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（AND検索）<br>
+      ・「曲の印象」未選択の場合はランダム順で結果を表示<br>
+      ・「歌ってみた」には「3D映像」「ライブ披露済み/未披露」のみ適用
+    </span></h2>
+<div id="mediaButtons" class="group"></div>
+
+<div class="footer-controls">
+  <div class="controls-inner">
+    <div id="countTop">
+      RESULT: <span class="count-num">0</span> SONGS FOUND
+    </div>
+ <div id="generate">   
+<div class="button-group">
+  <button id="showBtn">紹介だ！<span class="showBtn-hint">(表示)</span></button>
+  <button id="resetBtn">撤回だ！(リセット)</button>
+</div>
+  
+
+ </div>
+</div>  
+ </div>   
+  
+<div class="sort-group">
+  <button class="sortBtn active" data-sort="random">ランダム</button>
+  <button class="sortBtn" data-sort="date">公開日順</button>
+  <button class="sortBtn" data-sort="views">再生数順</button>
+  <button class="sortBtn" data-sort="relevance">印象関連度順</button>
+</div>  
+<div id="cards"></div>
+  
+ </section>
+    
+<script>
+  
+  const spImages = [
+    "images/ヒーロー_sp1.png",
+    "images/ヒーロー_sp2.png",
+    "images/ヒーロー_sp3.png",
+    "images/ヒーロー_sp4.png"
+];
+
+const pcImages = [
+    "images/ヒーロー_pc1.png",
+    "images/ヒーロー_pc2.png",
+    "images/ヒーロー_pc3.png",
+    "images/ヒーロー_pc4.png"
+];
+
+  const spRandom = spImages[Math.floor(Math.random() * spImages.length)];
+  const pcRandom = pcImages[Math.floor(Math.random() * pcImages.length)];
+
+  document.getElementById("hero-sp").srcset = spRandom;
+  document.getElementById("hero-pc").src = pcRandom;
+  
+// ===== CSV読み込み（カンマ入り対応） =====
+let currentSort = "random";  
+  
+  
+function parseCSV(text){
+  const rows = [];
+  let current = [], value = "", inQuotes = false;
+  for(let i=0; i<text.length; i++){
+    const c = text[i];
+    if(c=='"' && text[i+1]=='"'){ value+='"'; i++; }
+    else if(c=='"') inQuotes = !inQuotes;
+    else if(c==',' && !inQuotes){ current.push(value); value=""; }
+    else if((c=='\n'||c=='\r') && !inQuotes){
+      if(value || value==="") current.push(value);
+      if(current.length>0) rows.push(current);
+      current=[]; value="";
+      if(c=='\r' && text[i+1]=='\n') i++;
+    } else value += c;
+  }
+  if(value || value==="") current.push(value);
+  if(current.length>0) rows.push(current);
+  const headers = rows[0];
+  return rows.slice(1).map(row=>{
+    const obj={};
+   headers.forEach((h, i) => {
+  obj[h] = row[i] || "";
+});
+    return obj;
+  });
+}
+// ===== 選択状態 =====
+const selectedUnits = new Set();
+const selectedMedia = new Set(); // 映像・ライブ統合
+const selectedBPM = new Set();
+const selectedFeatures = new Set();
+// ===== 定義 =====
+const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
+// 「選択されないと表示されない」特別ユニット
+const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];  // 必要に応じて追加
+
+ const unitButtons = () =>
+  Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
+
+document.getElementById("unitSelectAll").onclick = () => {
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedUnits.add(name);
+    btn.classList.add("active");
+  });
+  updateCount();
+};
+
+document.getElementById("unitClearAll").onclick = () => {
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedUnits.delete(name);
+    btn.classList.remove("active");
+  });
+  updateCount();
+}; 
+  
+// mediaとライブを統合して順番通りに配置（2行に折り返される）
+const mediaTags = [
+  "MV公開","3D映像公開","本人の作詞/作曲",
+  "有観客ライブ披露済み","有観客ライブ未披露","独特なコーレス"
+];
+const bpmTags = ["ゆっくり","中くらい","速い","かなり速い"];
+const featureTags = [
+  "疾走感",
+  "しっとり・チル",
+  "温かい・優しい",
+ 
+  "盛り上がる",
+  "熱い・パワフル",
+  "ワイルド・攻撃的",
+  "爽やか",
+  "明るい・ハッピー",
+  "可愛い・ポップな",
+  "透明感",
+   "クール・かっこいい",
+  "オシャレ・スタイリッシュ",
+  "シリアス・ダーク",
+  "セクシー・色気がある",
+  "切ない・ノスタルジック",
+  "エモーショナル",
+  "壮大・ドラマチック",
+  "クセが強い・ユニーク"
+];
+// ===== ボタン生成関数 =====
+function createButtons(list, containerId, selectedSet, limit=null, exclusiveGroups=[]){
+  const container = document.getElementById(containerId);
+  list.forEach(item=>{
+    const btn = document.createElement("div");
+    btn.textContent = item;
+    btn.className="toggle";
+    btn.onclick = ()=>{
+      const isActive = selectedSet.has(item);
+     if(isActive){ 
+  selectedSet.delete(item); 
+  btn.classList.remove("active"); 
+  updateCount();
+
+  if(containerId === "featureGrid"){
+    updateRelevanceButton();
+  }
+
+  return; 
+}
+      if(limit && selectedSet.size>=limit) return;
+      exclusiveGroups.forEach(group=>{
+        if(group.includes(item)){
+          group.forEach(g=>{
+            if(selectedSet.has(g)){
+              selectedSet.delete(g);
+              document.querySelectorAll(".toggle").forEach(b=>{ if(b.textContent===g)b.classList.remove("active"); });
+            }
+          });
+        }
+      });
+     selectedSet.add(item);
+btn.classList.add("active");
+updateCount();
+
+if(containerId === "featureGrid"){
+  updateRelevanceButton();
+}
+    };
+    container.appendChild(btn);
+  });
+}
+// ===== CSV URL =====
+const CSV_URL = "data.csv";
+let allSongs=[];
+// ===== 初期ボタン描画 =====
+// 通常ユニット（歌ってみた以外）
+createButtons(
+  units.filter(u => !specialUnits.includes(u)),
+  "unitButtons",
+  selectedUnits
+);
+
+
+// 特別ユニット（歌ってみた）
+createButtons(
+  units.filter(u => specialUnits.includes(u)),
+  "specialUnitButtons",
+  selectedUnits
+);
+
+createButtons(mediaTags,"mediaButtons",selectedMedia); // 映像・ライブ統合
+createButtons(bpmTags,"bpmButtons",selectedBPM);
+  
+createButtons(featureTags,"featureGrid",selectedFeatures);
+// ===== CSV読み込み =====
+fetch(CSV_URL).then(res=>res.text()).then(text=>{
+  allSongs=parseCSV(text);
+  updateCount();
+  updateRelevanceButton();
+});
+// ===== ヘルパー: YouTubeサムネ =====
+function youtubeThumb(url){
+  const id=url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+  return id?`https://img.youtube.com/vi/${id[1]}/hqdefault.jpg`:"";
+}
+  
+function getOtherLinkLabel(url){
+  const u = url.toLowerCase();
+
+  if(u.includes("twitter.com") || u.includes("x.com")){
+    return "参考Twitter";
+  }
+
+  if(u.includes("instagram.com")){
+    return "参考Instagram";
+  }
+
+  if(u.includes("youtube.com") || u.includes("youtu.be")){
+    return "参考Youtube";
+  }
+
+  return "リンク";
+}
+  
+function updateRelevanceButton(){
+  const relevanceBtn = document.querySelector('.sortBtn[data-sort="relevance"]');
+
+  if(selectedFeatures.size === 0){
+    relevanceBtn.classList.add("disabled");
+
+    // もし関連度が選ばれていたらランダムへ戻す
+    if(currentSort === "relevance"){
+      currentSort = "random";
+      document.querySelectorAll(".sortBtn").forEach(b=>b.classList.remove("active"));
+      document.querySelector('.sortBtn[data-sort="random"]').classList.add("active");
+    }
+
+  } else {
+    relevanceBtn.classList.remove("disabled");
+  }
+}  
+// ===== 条件に合う曲数更新 =====
+function updateCount(){
+  if(!allSongs.length) return;
+  let results = allSongs.filter(song=>{
+    const unit = song["ユニット"].trim();
+    if(!unit) return false;  // 空欄は非表示
+    if(specialUnits.includes(unit)){
+        if(!selectedUnits.has(unit)) return false;
+    } else {
+        if(selectedUnits.size > 0 && !selectedUnits.has(unit)) return false;
+    }
+
+    for(let t of selectedMedia){
+  if(t === "有観客ライブ未披露") {
+    if(song["有観客ライブ披露済み"] !== "FALSE") return false;
+  } else {
+    if(song[t] !== "TRUE") return false;
+  }
+}
+    for(let t of selectedBPM){
+      const bpm = parseInt(song["BPM"])||0;
+      let label="";
+      if(bpm<=100) label="ゆっくり";
+      else if(bpm<=139) label="中くらい";
+      else if(bpm<=179) label="速い";
+      else label="かなり速い";
+      if(!selectedBPM.has(label)) return false;
+    }
+    for(let f of selectedFeatures){ if((parseInt(song[f])||0)<1) return false; }
+    return true;
+  });
+  
+  // 表示内容を作成
+  const countHtml = `RESULT: <span class="count-num">${results.length}</span> SONGS FOUND`;
+
+  // 上部の表示（countTop）だけを更新する
+  const countTop = document.getElementById("countTop");
+  if(countTop) {
+    countTop.innerHTML = countHtml;
+  }
+}
+document.querySelectorAll(".sortBtn").forEach(btn=>{
+  btn.onclick = ()=>{
+
+    // ★ 無効ボタンは反応しない
+    if(btn.classList.contains("disabled")) return;
+
+    document.querySelectorAll(".sortBtn")
+      .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+    currentSort = btn.dataset.sort;
+
+    document.getElementById("showBtn").click();
+  };
+});
+// ===== 表示処理 =====
+document.getElementById("showBtn").onclick = (e)=>{
+  const container=document.getElementById("cards");
+  container.innerHTML="";
+  let results = allSongs.filter(song=>{
+   const unit = song["ユニット"].trim();
+    if(!unit) return false;  // 空欄は非表示
+if(specialUnits.includes(unit)){
+    if(!selectedUnits.has(unit)) return false;
+} else {
+    if(selectedUnits.size > 0 && !selectedUnits.has(unit)) return false;
+}
+
+
+
+    for(let t of selectedMedia){
+  if(t === "有観客ライブ未披露") {
+    if(song["有観客ライブ披露済み"] !== "FALSE") return false;
+  } else {
+    if(song[t] !== "TRUE") return false;
+  }
+}
+    
+    for(let t of selectedBPM){
+      const bpm=parseInt(song["BPM"])||0;
+      let label="";
+      if(bpm<=100) label="ゆっくり";
+      else if(bpm<=139) label="中くらい";
+      else if(bpm<=179) label="速い";
+      else label="かなり速い";
+      if(!selectedBPM.has(label)) return false;
+    }
+    for(let f of selectedFeatures){ if((parseInt(song[f])||0)<1) return false; }
+    return true;
+  });
+  // 曲調でソート（未選択ならランダム表示）
+// ★ 紹介だ！ボタンから直接押されたときだけ初期化
+if(e?.isTrusted){
+  if(selectedFeatures.size === 0){
+    currentSort = "random";
+  } else {
+    currentSort = "relevance";
+  }
+
+  document.querySelectorAll(".sortBtn")
+    .forEach(b=>b.classList.remove("active"));
+
+  document
+    .querySelector(`.sortBtn[data-sort="${currentSort}"]`)
+    .classList.add("active");
+}
+
+// ===== 並び替え処理 =====
+if(currentSort === "random"){
+  results.sort(()=>Math.random()-0.5);
+}
+
+if(currentSort === "date"){
+  results.sort((a,b)=>{
+    return new Date(b["公開日"]) - new Date(a["公開日"]);
+  });
+}
+
+if(currentSort === "views"){
+  results.sort((a,b)=>{
+    return (parseInt(b["再生数"])||0) - (parseInt(a["再生数"])||0);
+  });
+}
+
+if(currentSort === "relevance"){
+  results.sort((a,b)=>{
+    const sumA=[...selectedFeatures].reduce((s,f)=>s+(parseInt(a[f])||0),0);
+    const sumB=[...selectedFeatures].reduce((s,f)=>s+(parseInt(b[f])||0),0);
+    return sumB-sumA;
+  });
+}
+  
+  
+  results.forEach(r=>{
+    const card=document.createElement("div");
+    card.className="card";
+    
+    // ★ サムネ画像にリンクを追加
+    if(r["サムネ用リンク"]){
+     const a = document.createElement("a");
+a.href = r["サムネ用リンク"];
+a.target = "_blank";
+
+const thumb = document.createElement("div");
+thumb.className = "thumb";
+
+const img = document.createElement("img");
+img.src = youtubeThumb(r["サムネ用リンク"]);
+
+thumb.appendChild(img);
+a.appendChild(thumb);
+card.appendChild(a);
+    }
+    // 曲名
+    const title=document.createElement("div");
+    title.className="title";
+    title.textContent=r["曲名"];
+    card.appendChild(title);
+    
+   // meta情報
+const meta = document.createElement("div");
+meta.className = "meta";
+
+const unitName = r["ユニット"].trim();
+
+if(specialUnits.includes(unitName)){
+  // 特別ユニット（歌ってみたなど）
+  meta.innerHTML = `
+    歌唱：${r["歌唱"]}<br>
+    原曲：${r["作詞"].trim()}<br>
+    公開日：${r["公開日"]}
+  `;
+} else {
+  // 通常ユニット
+  meta.innerHTML = `
+    歌唱：${r["歌唱"]}<br>
+    作詞：${r["作詞"].trim()}<br>
+    作曲：${r["作曲"].trim()}<br>
+    編曲：${r["編曲"].trim()}<br>
+    公開日：${r["公開日"]}
+  `;
+}
+
+card.appendChild(meta);
+
+    // 説明
+    if(r["説明"]){
+      const desc=document.createElement("div");
+      desc.className="desc";
+      desc.textContent=r["説明"];
+      card.appendChild(desc);
+    }
+   // リンク類
+const links = document.createElement("div");
+links.className = "links";
+
+// 既存リンク
+if(r["MVリンク"]){
+  const a = document.createElement("a");
+  a.href = r["MVリンク"];
+  a.target = "_blank";
+
+  if (specialUnits.includes(unitName)) {
+    // ★ 歌ってみた系のときは、ユニット名（歌ってみたワンコーラス等）をラベルにする
+    a.textContent = unitName;
+  } else {
+    // それ以外（オリジナル曲など）は、今まで通り「公式MV」とする
+    a.textContent = "公式MV";
+  }
+  links.appendChild(a);
+}
+
+// 3D映像リンク（1, 2, 3すべてに対応）
+const tdLinkKeys = ["3Dリンク", "3Dリンク2", "3Dリンク3"];
+tdLinkKeys.forEach(key => {
+  if(r[key] && r[key].trim() !== ""){
+    const a = document.createElement("a");
+    a.href = r[key];
+    a.target = "_blank";
+    
+    // 「3Dリンク」というキー名の時だけラベルを変える
+    if(key === "3Dリンク") {
+      a.textContent = "3D単体動画";
+    } else {
+      a.textContent = "3Dライブ配信";
+    }
+    
+    links.appendChild(a);
+  }
+});
+// Shorts専用リンク
+if(r["Shortsリンク"]){
+  const a = document.createElement("a");
+  a.href = r["Shortsリンク"];
+  a.target = "_blank";
+  a.textContent = "Shorts";
+  links.appendChild(a);
+}
+if(r["サブスクリンク"]){
+  const a=document.createElement("a");
+  a.href=r["サブスクリンク"];
+  a.target="_blank";
+  a.textContent="サブスク";
+  links.appendChild(a);
+}
+
+    
+// ★ その他リンク（複数対応＋Shortsカウント）
+const otherLinks = [];
+if(r["その他リンク"]) otherLinks.push(r["その他リンク"]);
+if(r["その他2"]) otherLinks.push(r["その他2"]);
+
+const labelCount = {};
+otherLinks.forEach(url=>{
+  const label = getOtherLinkLabel(url);
+  labelCount[label] = (labelCount[label] || 0) + 1;
+});
+
+otherLinks.forEach(url=>{
+  const baseLabel = getOtherLinkLabel(url);
+  const count = labelCount[baseLabel];
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+
+  if(baseLabel === "Shorts" && count > 1){
+    a.textContent = `Shorts(${count})`;
+  } else {
+    a.textContent = baseLabel;
+  }
+
+  links.appendChild(a);
+});
+
+card.appendChild(links);
+    container.appendChild(card);
+    
+// カード内のすべての<a>タグに、一括で「別タブで開く」設定を付与する（もし漏れがあっても安心）
+card.querySelectorAll('.links a').forEach(a => {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer"; // セキュリティ対策
+});    
+  });
+};
+// ===== リセット処理 =====
+document.getElementById("resetBtn").onclick=()=>{
+  selectedUnits.clear();
+  selectedMedia.clear();
+  selectedBPM.clear();
+  selectedFeatures.clear();
+
+  document.querySelectorAll(".toggle")
+    .forEach(b=>b.classList.remove("active"));
+
+  document.getElementById("cards").innerHTML="";
+
+  currentSort = "random";  // ← 追加
+
+  document.querySelectorAll(".sortBtn")
+    .forEach(b=>b.classList.remove("active"));
+
+  document
+    .querySelector('.sortBtn[data-sort="random"]')
+    .classList.add("active");
+
+  updateRelevanceButton();  // ← 追加（超重要）
+
+  updateCount();
+};
+</script>
+</body>
+</html>
+
