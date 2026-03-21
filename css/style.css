@@ -155,7 +155,7 @@ h2::before {
   display: block;
   width: 30px;
   height: 30px;
-  background-image: url('/show/images/kamon.png');
+  background-image: url('/../images/kamon.png');
   background-size: contain;
   background-repeat: no-repeat;
 }
