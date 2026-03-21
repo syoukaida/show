@@ -1,0 +1,941 @@
+ /*=========================================
+        1. カラー変数・基本設定
+========================================= */
+:root {
+  --c-bg: #f8f9f9;
+  --c-bg-sub2: #d7e0e5;
+  --c-bg-sub: #c8d8e1;
+
+  --c-main: #00adc1;   /* 明るい青緑 */
+  --c-main-dark: #2d7282; /* 濃い青緑 */
+  --c-main-deep: #1A434c;
+  --c-kaida: #4DD7E3;　 /* 甲斐田カラー */
+  --c-kaida-bg: rgba(77, 215, 227, 0.1); /* 透過10% */
+  --c-kaida-line: rgba(77, 215, 227, 0.3); /* 透過30% */
+
+  --c-text-main: #1f2a2e;
+  --c-text-sub2: #455257;
+  --c-text-sub: #6b7a80;
+  
+　--space-section: 80px;
+  --space-card: 32px;
+  }
+   
+ @media (max-width: 767px) {
+  :root {
+    --space-section: 40px;
+    --space-card: 20px;
+  }
+}
+/* ===== ページ全体 ===== */
+body { 
+  font-family:sans-serif;
+  color:var(--c-text-main);
+  line-height: 1.7;
+  background:var(--c-bg-sub2); 
+  margin: 0;
+}   
+
+ /* =========================================
+    2. レイアウト（ヘッダー・ヒーロー・メイン）
+ ========================================= */   
+/* =====ヘッダー ===== */    
+.site-header {
+  backdrop-filter: blur(8px);
+  background: var(--c-text-main);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  color: var(--c-bg); 
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center; 
+}
+.nav {
+  margin-left: auto; /* 右側に寄せる */
+  display: flex;
+  gap: 24px;
+  margin-right: 24px; /* ← navとボタンの間 */
+}
+.nav a {
+  color: var( --c-bg);
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.85;
+}
+.nav a:hover {
+  opacity: 1;
+}
+.cta-button {
+  background: var(--c-kaida);
+  color:var(--c-text-main);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 600;
+}
+/* 今いるページの文字色を変える */
+.nav a.current-page {
+  color: var(--c-kaida);
+  font-weight: bold;
+  opacity: 1;
+}
+.nav a.current-page:hover {
+  opacity: 0.8;
+}       
+ @media (max-width: 768px) {
+  .header-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    padding: 6px 12px;
+  }
+  .logo {
+    grid-column: 1 / -1; /* 1行目を全部使う */
+    white-space: nowrap;
+    line-height: 1.2;
+    font-size: 16px; /* まだ大きければ 15px */
+  }
+  .nav {
+    margin: 0;
+    gap: 16px;
+    justify-self: end;
+  }
+  .nav a {
+    padding: 4px 0;
+    font-size: 12px;
+  }
+  .cta-button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+/* ===== ヒーロー画像・メイン共通設定 ===== */
+.hero { width: 100%; }
+.hero img { width: 100%; height: auto; display: block; }
+.main { width: 100%; } /* 基本は100%にしておく */
+
+/* PC版（画面が広い時だけ制限をかける） */
+@media (min-width: 769px) {
+    .hero { width: 80vw; margin: 0 auto; }
+    .main { width: 70vw; margin: 0 auto; }
+}
+
+/* スマホ版（画面が狭い時の微調整） */
+@media (max-width: 768px) {
+  .main {
+    width: 96%;      /* 幅をしっかり固定 */
+    margin: 0 auto;  /* 真ん中に寄せる */
+    padding: 0;      /* sectionの余白をリセットしてwidthで制御 */
+  }
+}
+/*余白設定：隙間を消す */ 
+section {padding: var(--space-section) 16px;}
+section.hero {padding: 0;}
+section.hero + section.main {padding-top: 0;}
+    
+
+ /* =========================================
+      4. 見出し・ヒント（吹き出し）
+========================================= */  
+h2 {
+  display: flex;
+  align-items: center; /* 縦中央揃え */
+  gap: 6px;            /* アイコンと文字の間隔 */
+  color: var(--c-text-main);
+  margin-bottom: 2px !important; /* 見出しのすぐ下の余白を固定 */
+}
+h2::before {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  background-image: url('images/kamon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+    
+@media (max-width: 768px) {
+  h2 {font-size: 16px; gap: 4px; }
+  h2::before {width: 20px; height: 20px; }
+}
+   
+h2 .hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: bold;
+  background: var(--c-bg-sub);
+  color: var(--c-main-dark);
+  cursor: help;
+}
+
+/* 吹き出し本体 */
+.hint-text {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  transform: translateY(-50%);
+  background: #E0F9FB;
+  border: 2px solid var(--c-kaida);
+  color: var(--c-main);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 1000;
+  white-space: normal;     /* 折り返し可能 */
+  width: auto;             /* 自然に横幅を取る */
+  min-width:300px;        /* 最低限の横幅を確保 */
+  max-width: 600px;       /* 横幅の上限を大きくする */
+  }  
+
+/* 吹き出しのしっぽ */
+.hint-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent var(--c-kaida) transparent transparent;
+}
+
+/* ホバーで表示 */
+.hint:hover .hint-text {
+  opacity: 1;
+}
+   
+@media (max-width: 768px) {
+   .hint-text { 
+  min-width:28vw;        /* 最低限の横幅を確保 */
+  max-width: 90vw;       /* 横幅の上限を大きくする */
+}    
+}        
+ /* =========================================
+     5. フィルターボタン・グリッド
+========================================= */
+.group { 
+  margin-bottom:24px; 
+  display:flex;          /* 横並び */
+  flex-wrap:wrap;        /* 行を折り返す */
+  gap:10px 6px;               /* ボタン間の隙間 */
+}
+ @media (max-width: 768px) {
+  #mediaButtons {gap: 6px 6px; }
+}
+/* 通常ユニット行 歌ってみたまでの隙間を縮める*/
+#unitButtons {margin-bottom:12px;}
+@media (max-width: 768px) {
+  #unitButtons {margin-bottom: 6px;}
+   }
+   
+/* フィルタ用ボタンの基本スタイル */
+.toggle { 
+  background: rgba(255, 255, 255, 0.8); /* 白を少し透かす */
+  border: 1px solid #d1dce0; /* 基本は控えめな色 */
+  border-radius: 12px; /*丸くする */
+  box-shadow:none; /* 重い影は消す */
+  color: var(--c-text-sub);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0 12px;/*内側の余白 上下  左右*/
+  line-height: 30px;/*行の高さ（縦のサイズ）*/
+  transition: all 0.2s ease;/*変化をなめらかに*/
+}
+.toggle:hover {
+  border-color: var(--c-kaida);
+  color: var(--c-kaida);
+  background: #ffffff;
+}
+/* 選択済みボタン */
+.toggle.active {
+  background:var(--c-main);
+  border-color: var(--c-main);
+  color: #ffffff;
+  transform: translateY(1px);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.18);
+}
+    
+/* 特別ユニット行（歌ってみた） */
+#specialUnitButtons {
+  margin-top:2px;     /* 上の行との隙間 */
+  display: flex;       /* 横並び */
+  align-items: center; /* 縦位置を中央揃え */
+  gap: 4px;            /* ボタンとの間隔 */
+  margin-bottom: 10px;
+}
+#specialUnitButtons .toggle {
+  font-size: 12px;    /* 文字サイズを少し小さく */
+  padding: 3px 8px;   /* ボタンの縦・横の余白を小さく */
+  line-height: 20px;/*行の高さ（縦のサイズ）*/
+}
+/* 「歌ってみた」行の左側に注釈を追加 */
+#specialUnitButtons::before {
+  content: "※追加表示";
+  font-size: 10px;           /* 小さく */
+  color: var(--c-text-sub); /* 控えめな色 */
+  opacity: 0.8;             /* 少し透かす */
+  margin-right: 4px;        /* ボタンとの間隔 */
+  align-self: center;       /* 縦位置を中央に */
+  white-space: nowrap;      /* 改行させない */
+}
+
+/* スマホ版でさらに小さくする場合 */
+@media (max-width: 768px) {
+  #specialUnitButtons::before {
+    font-size: 9px;
+    margin-right: 2px;
+  }
+}   
+.unit-mini {
+  display: flex;
+  gap: 6px;
+  margin: 0px;
+}
+.unit-mini button {
+  background: transparent;
+  border: 1px solid var(--c-text-sub);
+  color: var(--c-text-sub);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.unit-mini button:hover {
+  border-color: var(--c-main);
+  color: var(--c-main);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 8px 24px;
+  max-width: 720px;   /* ← 横幅制限 */
+  margin: 0 ;     /* ← 中央寄せ */
+}
+@media (max-width: 768px) {
+  .feature-grid .toggle {
+    padding: 0 8px;
+    line-height: 26px;
+  }
+  .feature-grid {gap: 8px 8px; }
+  .toggle { font-size: 10px; }
+  #specialUnitButtons .toggle {font-size: 9px;}
+
+  #unitButtons .toggle,
+  #specialUnitButtons .toggle,
+  #mediaButtons .toggle,
+  #bpmButtons .toggle {
+    padding: 0 8px;      /* 横余白を削る */
+    line-height: 26px;   /* 高さを揃える */
+    font-size: 10px;     /* 文字サイズも統一 */
+  }
+}
+/* グループごとの枠 */
+.filter-group {
+  background: rgba(255, 255, 255, 0.4); /* 非常に薄い白 */
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px; /* グループ間の隙間 */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* 控えめな縁取り */
+}
+
+/* グループ内の見出し余白を調整 */
+.filter-group h2 {
+  margin-top: 0;
+  margin-bottom: 12px !important;
+  font-size: 1.1rem;
+}
+
+/* グループ内の最後の要素の余白を消す */
+.filter-group > *:last-child {
+  margin-bottom: 0;
+}
+
+/* スマホ版の調整 */
+@media (max-width: 768px) {
+  .filter-group {
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+  .filter-group h2 {
+    font-size: 0.95rem;
+  }
+} 
+/* =========================================
+      3. RESULTバー（固定ヘッダー）
+========================================= */
+#countTop {
+  position: relative;
+  top: 0;                /* 隙間なく画面上端に貼り付く */
+  z-index: 100;          /* 他の要素より前面に */
+  width: 100%;
+  margin: 0;             /* 外側の余白をゼロに */
+  padding: 6px 20px;    /* 内側の余白を少し広げて読みやすく */
+  box-sizing: border-box; /* paddingを含めた幅計算 */
+  background:transparent;
+  border-bottom: 1px solid var(--c-kaida-line); /* 甲斐田カラーの細い線で締める */
+  font-weight:bold;
+  font-size:16px;
+  color: var(--c-main-deep);
+  text-transform: uppercase;
+  display: block;
+  letter-spacing: 0.05em;
+}
+.count-num {
+  color: var(--c-main);
+  font-weight:600;
+  font-size:25px;
+  letter-spacing: 0.02em;
+  text-shadow: 1px 1px 0px #fff; /* 重なりを綺麗に見せる */
+}    
+/* ヒーロー画像とRESULTバーの間の隙間を消す */
+.hero + .main {padding-top: 0; }
+/* スマホ版の調整 */
+@media (max-width: 768px) {
+  #countTop {padding: 6px 16px;  }
+}
+      
+#generate {
+  padding-top: 8px;     /* 境界線からボタンまでの距離（内側の空白） */
+  border-top: 1px solid rgba(77, 215, 227, 0.4); /* さわやかな境界線 */
+ }
+/* 表示ボタン */
+#showBtn { 
+  padding:12px 24px; 
+  font-size:18px; 
+  font-weight:bold; 
+  margin-right:12px; 
+  border:none; 
+  border-radius:6px; 
+  cursor:pointer; 
+  color: var(--c-bg); 
+  background: linear-gradient(135deg,var(--c-main) 0%,var(--c-main) 30%,var(--c-main-deep) 100%);
+  box-shadow: 0 6px 16px rgba(77, 215, 227, 0.35);
+}
+
+#showBtn:hover { 
+  background: linear-gradient(
+    135deg,
+    var(--c-main-dark),
+    var(--c-main)
+ );
+}
+.showBtn-hint {font-size:13px;}
+    
+/* リセットボタン */
+#resetBtn {
+  background: transparent;
+  color: var( --c-text-sub);
+  border: 1px solid var( --c-text-sub);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+#resetBtn:hover {
+  border-color: var(--c-main);
+  color: var(--c-main);
+}
+/* ボタン全体の下の余白 */
+.button-group {margin-bottom:2px;}
+   
+/* --- 下部固定パネル本体 --- */
+.footer-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+  /* 背景を透かす（rgbaの最後の0.9が透明度です） */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px)saturate(160%); /* 後ろをぼかす */
+  -webkit-backdrop-filter: blur(15px) saturate(160%); /* Safari対応 */
+  border-top: 2px solid var(--c-kaida-line);
+  padding: 0px 16px calc(10px + env(safe-area-inset-bottom));
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+}
+.controls-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+   
+/* --- メインコンテンツが隠れないように下部余白を確保 --- */
+.main {
+  padding-bottom: 200px !important; 
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding-bottom: 180px !important;
+  }
+  #countTop { font-size: 14px; }
+  .count-num { font-size: 20px; }
+  #showBtn { padding: 10px 18px; font-size: 16px; }
+}   
+/* =========================================
+      ソート
+========================================= */   
+/* ===== ソートエリア ===== */
+.sort-group {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 15px; /* ★追加：線とボタンの間の余白 */
+  border-top: 0.5px solid rgba(77, 215, 227, 1); /* ★追加：甲斐田カラーの薄い線 */
+  width: 100%;
+}
+/* PC版（画面が広い時）の設定 */
+@media (min-width: 769px) {
+  .sort-group {
+    /* 親の .main (70vw) より左右に 5vw ずつ広げて 80vw にする */
+    width: calc(100% + 10vw); 
+    margin-left: -5vw;
+    
+    /* ボタンの開始位置を元の 70vw の位置に合わせるための調整 */
+    padding-left: 5vw;
+    padding-right: 5vw;
+    box-sizing: border-box;
+  }
+}
+
+/* スマホ版（画面が狭い時）の微調整 */
+@media (max-width: 768px) {
+  .sort-group {
+    margin-top: 16px;
+    padding-top: 12px;
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+  }   
+ } 
+/* ===== ソートボタン ===== */
+.sortBtn {
+  padding: 5px 12px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--c-text-sub);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.sortBtn:hover {
+  background: var(--c-bg-sub);
+  color: var(--c-text-main);
+}
+.sortBtn.active {
+  background: var(--c-kaida-line);
+  color: var(--c-main-deep);
+  border-color: var(--c-kaida-line);
+  font-weight: 600;
+}
+.sortBtn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  h2 { margin-bottom: 4px; }
+  .group { margin-bottom: 16px; }
+  .sort-group {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+ /* =========================================
+      7. 楽曲カード表示
+ ========================================= */
+#cards { 
+  margin-top:20px; 
+  display:grid; 
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap:20px; 
+}
+/* スマホは2列固定 */
+@media (max-width: 768px) {
+  #cards {grid-template-columns: repeat(2, 1fr);}
+}
+/* 個別カード */
+.card {
+  background: rgba(255, 255, 255, 0.7); /* 透明感の核心 */
+  border: 1px solid rgba(255, 255, 255, 0.4); /* 縁だけ少し光らせる */
+  backdrop-filter: none; /* 挙動重視のため、ここではあえてボカさない */
+  color: var(--c-text-main);
+  padding:16px; 
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(31, 42, 46, 0.05); /* 非常に薄い影 */
+}
+/* サムネ画像 */
+.thumb {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* 曲名 */
+.title { 
+  font-size:16px; 
+  font-weight:bold; 
+  margin-bottom:6px; 
+}
+/* メタ情報（歌唱、作詞、作曲など） */
+.meta { 
+  font-size:13px; 
+  line-height:1.6; 
+  margin-bottom:6px; 
+}
+/* 説明文 */
+.desc { 
+  font-size:11px; 
+  margin-bottom:10px; 
+}
+/* リンク類 */
+.links a { 
+  display:inline-block; 
+  margin-right:8px; 
+  font-size:13px; 
+  color: var(--c-main); 
+  font-weight:bold; 
+  text-decoration:none; 
+}
+.links a {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 1px; /* 文字とアイコンの隙間 */
+  color: var(--c-main);
+  font-weight: bold;
+}
+.links a:hover {
+  opacity: 0.8;
+}
+.links a::after {
+  content: "";
+  display: inline-block;
+  width: 1.1em;  /* アイコンのサイズ（文字の大きさに連動） */
+  height: 1.1em;
+  /* アイコンのデザインデータ（SVG） */
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+@media (max-width: 768px) {
+  .title { 
+    font-size: 14px; /* 曲名を少し小さく */
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .meta { 
+    font-size: 12px; /* 歌唱・作詞などを小さく */
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+  .desc {line-height: 1.4;}
+  .links a { 
+    font-size: 12px; /* リンクボタンを小さく */
+    margin-right: 6px;
+  }
+  .card {padding:12px;  border-radius: 12px; }
+} 
+   
+/* プレイリストカード */
+#plcards { 
+  margin-top: 20px; 
+  display: grid; 
+  /* 1frの代わりに固定値を意識する */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 260px)); 
+  gap: 20px;
+  justify-content: center; /* 260pxの箱が並んだ後の余白を左右均等にする */
+  padding:0; /* ← これを追加：section のデフォルトパディングを打ち消す */
+}
+/* スマホは2列固定 */
+@media (max-width: 768px) {
+  #plcards {grid-template-columns: repeat(2, 1fr);}
+}
+/* 個別カード */
+.plcard {
+  background: rgba(255, 255, 255, 0.7); /* 透明感の核心 */
+  border: 1px solid rgba(255, 255, 255, 0.4); /* 縁だけ少し光らせる */
+  backdrop-filter: none; /* 挙動重視のため、ここではあえてボカさない */
+  color: var(--c-text-main);
+  padding:16px; 
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(31, 42, 46, 0.05); /* 非常に薄い影 */
+}
+/* プレイヤーを囲む枠（16:9の比率をカード内で維持） */
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 の比率 */
+  margin-top: 12px;
+  border-radius: 8px; /* カードの角丸に合わせた調整 */
+  overflow: hidden;
+  background: #000;
+}
+
+/* プレイヤー本体を枠いっぱいに広げる */
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* カード内のタイトル（h2）と説明（p）の微調整 */
+.plcard h2 {
+  font-size: 1.1rem; /* カードに合わせて少し控えめに */
+  margin-top: 0 !important; /* カード上部の余白をリセット */
+}
+
+.plcard p {
+  margin: 0 !important; /* 上下左右すべての余白を強制的にゼロにする */
+  font-size: 12px;
+  line-height: 1.4; /* 行間を少し詰めるとよりスッキリします */
+}
+
+/* スマホ版でカードが小さい時の調整 */
+@media (max-width: 768px) {
+  .plcard {
+    padding: 10px; /* 余白を詰める */
+  }
+  .plcard h2 {
+    font-size: 14px;
+  }
+}   
+
+
+ 
+ 
+    p {
+      margin: 0 0 15px 30px;
+      color:var(--c-text-sub2);
+      font-size: 14px; 
+    }
+     /* 通常リンクはそのまま */
+  a {
+    color:var(--c-main);
+    text-decoration: underline;
+  }
+
+@media (max-width: 768px) {
+  p {font-size: 12px; gap: 4px; }
+}    
+ li {
+      margin: 0 0px 0px 0px;
+      color:var(--c-text-sub2);
+      font-size: 14px; 
+    }
+/* リスト全体の左側に余白を作る */
+.main ul {
+  padding-left: 4em; /* 1emで文字1つ分。2emなら2文字分右に寄ります */
+}
+/* pのすぐ後ろにulが来る場合だけ、pの下余白をゼロにする */
+p + ul {
+  margin-top: -20px; /* もしくは ul の上側をマイナスで持ち上げる */
+}
+h2 + ul {
+  margin-top: -3px; /* もしくは ul の上側をマイナスで持ち上げる */
+}
+@media (max-width: 768px) {
+  li {font-size: 12px; gap: 4px; }
+}    
+/* 外部リンク用：文字の後ろにアイコンを付与 */
+.ext-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px; /* 文字とアイコンの隙間 */
+  text-decoration: none;
+  color: var(--c-main);
+  text-decoration: underline; /* 下線をつける */
+}
+
+.ext-link::after {
+  content: "";
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  background-color: currentColor;
+  /* SVGアイコンの設定 */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.ext-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+.outfit-slider {
+            display: flex;
+            overflow-x: auto; /* 横方向にはみ出したらスクロールさせる */
+            scroll-snap-type: x mandatory; /* スクロールした時にピタッと止まる設定 */
+            gap: 15px;
+            padding-bottom: 20px; /* スクロールバーと被らないための余白 */
+            -webkit-overflow-scrolling: touch; /* iPhoneでのスクロールを滑らかにする */
+        }
+
+        /* 各ツイートのカード */
+        .tweet-card {
+            flex: 0 0 300px; /* 横幅を300pxに固定して、縮ませない */
+            scroll-snap-align: center; /* スクロールが止まる位置をカードの真ん中にする */
+        }
+
+        /* スクロールバーのデザイン（任意：細くする） */
+        .outfit-slider::-webkit-scrollbar {
+            height: 6px;
+        }
+        .outfit-slider::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+/* メンバー紹介全体の枠 */
+        .member-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            max-width: 500px;
+          background: rgba(255, 255, 255, 0.5); /* 透明感の核心 */
+          border: 1px solid rgba(255, 255, 255, 0.4); /* 縁だけ少し光らせる */
+          box-shadow: 0 4px 15px rgba(31, 42, 46, 0.05); /* 非常に薄い影 */
+        }
+
+        /* 丸いアイコンの親要素 */
+        .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid; /* メンバーカラー等に変更可能 */
+            flex-shrink: 0;
+            background: #000;
+        }
+
+        /* YouTubeサムネイルをアイコン化 */
+        .icon-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-text h3 {
+            margin: 0 0 0px 0;
+            font-size: 1.2rem;
+          color: var(--c-text-main);
+        }
+        .member-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--c-text-sub);
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            .member-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+.sns-links { 
+            display: flex; 
+            gap: 22px; /* バッジ同士がぶつからないよう広めに設定 */
+            margin-top: 18px; 
+  flex-wrap: wrap; /* 入り切らない時に自動で折り返す */
+            align-items: center; 
+        }
+        .sns-links a {
+            font-size: 24px;
+            text-decoration: none;
+            transition: transform 0.2s;
+            position: relative;
+            display: inline-flex;
+        }
+        .sns-links a:hover { transform: scale(1.1); }
+
+        /* 基本のアイコン色 */
+        .fa-youtube { color: #ff0000; }
+        .fa-x-twitter { color: #000; }
+        .fa-mobile-screen-button, .fa-address-card, .fa-book-open { color: #444; }
+/* アイコン個別の色（特技を目立たせる） */
+    .fa-guitar { color: #d35400; }
+    .fa-file-audio { color: #2980b9; }
+    .fa-khanda { color: #2c3e50; }
+    .fa-music { color: #6c5ce7; }
+
+        /* ★ バッジの共通設定 ★ */
+        .custom-badge {
+            position: absolute;
+        /* 位置の調整：下（bottom）を基準にすると「真ん中寄り」の調整がしやすいです */
+        bottom: 22px; 
+        right: -10px; 
+        
+        color: white;
+        font-size: 8px;        /* さらに小さく（最小クラス） */
+        font-weight: bold;
+        padding: 1px 4px;      /* 上下を極限まで詰める */
+        border-radius: 3px;    /* 角丸を少しシャープに */
+        line-height: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        white-space: nowrap;
+        pointer-events: none;  /* バッジがクリックの邪魔をしないように */
+        }
+
+        /* バッジごとの色設定 */
+        .bg-short    { background: #ff4757; right: -5px; } /* 1min (短いので位置詰め) */
+        .bg-official { background: #2ed573; right:-5px}               /* Official */
+        .bg-wiki     { background: #1e90ff; right:1px} /* Wiki */
+        .bg-sword   { background: #1e90ff; right:-5px}
+        .bg-guitar   { background: #1e90ff; right:-5px}
+.bg-special  { background: #eccc68; color: #333; } /* 黄色：特技用（目立つように） */
+    .bg-music    { background: #a4b0be; }               /* グレー：Original曲用 */
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            .member-profile { flex-direction: column; text-align: center; padding: 25px 15px; }
+            .sns-links { justify-content: center; flex-wrap: wrap; gap: 25px; }
+        }
