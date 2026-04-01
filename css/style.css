@@ -34,6 +34,9 @@ body {
   line-height: 1.7;
   background:var(--c-bg-sub2); 
   margin: 0;
+  overflow-x: hidden;
+    position: relative;
+    width: 100%;
 }   
 
  /* =========================================
@@ -85,7 +88,22 @@ body {
 }
 .nav a.current-page:hover {
   opacity: 0.8;
-}       
+}  
+/* h1そのものの装飾を消して、親要素(.logo)に従わせる */
+.logo h1 {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;   /* 親要素(.logo)で設定したサイズを引き継ぐ */
+  font-weight: inherit; /* 親要素(.logo)の太さを引き継ぐ */
+  line-height: inherit;
+}
+
+/* リンクの装飾を消す */
+.logo h1 a {
+  text-decoration: none; /* 下線を消す */
+  color: inherit;        /* 文字の色を親要素に合わせる */
+  display: block;        /* クリックできる範囲を広げる */
+}
  @media (max-width: 768px) {
   .header-inner {
     display: grid;
@@ -100,6 +118,7 @@ body {
     line-height: 1.2;
     font-size: 16px; /* まだ大きければ 15px */
   }
+   
   .nav {
     margin: 0;
     gap: 16px;
@@ -132,10 +151,15 @@ body {
     width: 96%;      /* 幅をしっかり固定 */
     margin: 0 auto;  /* 真ん中に寄せる */
     padding: 0;      /* sectionの余白をリセットしてwidthで制御 */
+    max-width: 100vw;
+    overflow-x: hidden;
+    padding-left: 10px;  /* 左右に最低限の余白 */
+    padding-right: 10px;
+    box-sizing: border-box;
   }
 }
 /*余白設定：隙間を消す */ 
-section {padding: var(--space-section) 16px;}
+section {padding: var(--space-section) 16px;box-sizing: border-box;}
 section.hero {padding: 0;}
 section.hero + section.main {padding-top: 0;}
     
@@ -155,14 +179,9 @@ h2::before {
   display: block;
   width: 30px;
   height: 30px;
-  background-image: url('../images/kamon.png');
+  background-image: url('kamon.png');
   background-size: contain;
   background-repeat: no-repeat;
-}
-    
-@media (max-width: 768px) {
-  h2 {font-size: 16px; gap: 4px; }
-  h2::before {width: 20px; height: 20px; }
 }
    
 h2 .hint {
@@ -198,13 +217,17 @@ h2 .hint {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease;
-  z-index: 1000;
+  z-index: 9999;
   white-space: normal;     /* 折り返し可能 */
   width: auto;             /* 自然に横幅を取る */
   min-width:300px;        /* 最低限の横幅を確保 */
   max-width: 600px;       /* 横幅の上限を大きくする */
   }  
-
+@media (max-width: 768px) {
+  h2 {font-size: 16px; gap: 4px; }
+  h2::before {width: 20px; height: 20px; }
+  .hint-text {font-size: 8px;}
+}
 /* 吹き出しのしっぽ */
 .hint-text::after {
   content: "";
@@ -221,13 +244,30 @@ h2 .hint {
 .hint:hover .hint-text {
   opacity: 1;
 }
-   
+/* PCのみホバーで表示（マウスがあるデバイスのみ） */
+@media (hover: hover) {
+  .hint:hover .hint-text {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* JSで「active」クラスがついた時に表示（スマホ・PC共通） */
+.hint.active .hint-text {
+  opacity: 1;
+  pointer-events: auto;
+}   
 @media (max-width: 768px) {
    .hint-text { 
-  min-width:28vw;        /* 最低限の横幅を確保 */
+  min-width:150px;        /* 最低限の横幅を確保 */
+  max-width: 90vw;       /* 横幅の上限を大きくする */}
+  h2:has(+ #unitButtons) .hint-text,
+h2:has(+ #specialUnitButtons) .hint-text {
+  min-width:70px;        /* 最低限の横幅を確保 */
   max-width: 90vw;       /* 横幅の上限を大きくする */
 }    
-}        
+} 
+
  /* =========================================
      5. フィルターボタン・グリッド
 ========================================= */
@@ -280,7 +320,7 @@ h2 .hint {
   display: flex;       /* 横並び */
   align-items: center; /* 縦位置を中央揃え */
   gap: 4px;            /* ボタンとの間隔 */
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 #specialUnitButtons .toggle {
   font-size: 12px;    /* 文字サイズを少し小さく */
@@ -318,6 +358,7 @@ h2 .hint {
   padding: 4px 10px;
   border-radius: 999px;
   cursor: pointer;
+  margin: 10px 0 0px 0px;
 }
 .unit-mini button:hover {
   border-color: var(--c-main);
@@ -349,9 +390,21 @@ h2 .hint {
     font-size: 10px;     /* 文字サイズも統一 */
   }
 }
+@media (max-width: 450px) {
+  .toggle { font-size: 8px; }
+  .unit-mini button{ font-size: 9px; }
+  #specialUnitButtons .toggle {font-size: 8px;}
+
+  #unitButtons .toggle,
+  #specialUnitButtons .toggle,
+  #mediaButtons .toggle,
+  #bpmButtons .toggle {
+    font-size: 8px;     /* 文字サイズも統一 */
+  }
+}
 /* グループごとの枠 */
 .filter-group {
-  background: rgba(255, 255, 255, 0.4); /* 非常に薄い白 */
+  background: rgba(255, 255, 255, 0.3); /* 非常に薄い白 */
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px; /* グループ間の隙間 */
@@ -412,7 +465,7 @@ h2 .hint {
 .hero + .main {padding-top: 0; }
 /* スマホ版の調整 */
 @media (max-width: 768px) {
-  #countTop {padding: 6px 16px;  }
+  #countTop {padding: 1px 16px;  }
 }
       
 #generate {
@@ -458,7 +511,21 @@ h2 .hint {
 }
 /* ボタン全体の下の余白 */
 .button-group {margin-bottom:2px;}
-   
+@media (max-width: 768px) {
+  #showBtn {
+    padding: 8px 16px;   /* 上下を 10px → 6px に縮小 */
+    font-size: 14px;      /* 文字も少しだけ小さくしてバランス調整 */
+  }
+  /* 撤回だ！ボタンの縦幅をスリムにする */
+  #resetBtn {
+    padding: 4px 12px;   /* 上下を 8px → 4px に縮小 */
+    font-size: 11px;
+  }
+  /* ボタンを包むグループの余白も微調整 */
+  .button-group {
+    margin-bottom: 0;
+  }
+}   
 /* --- 下部固定パネル本体 --- */
 .footer-controls {
   position: fixed;
@@ -491,7 +558,6 @@ h2 .hint {
   }
   #countTop { font-size: 14px; }
   .count-num { font-size: 20px; }
-  #showBtn { padding: 10px 18px; font-size: 16px; }
 }   
 /* =========================================
       ソート
@@ -503,7 +569,7 @@ h2 .hint {
   flex-wrap: wrap;
   gap: 8px;
   padding-top: 15px; /* ★追加：線とボタンの間の余白 */
-  border-top: 0.5px solid rgba(77, 215, 227, 1); /* ★追加：甲斐田カラーの薄い線 */
+  border-top: 0.5px solid rgba(77, 215, 227, 1) ; /* メインの水色（少し太くして存在感を出す） */
   width: 100%;
 }
 /* PC版（画面が広い時）の設定 */
@@ -525,9 +591,10 @@ h2 .hint {
   .sort-group {
     margin-top: 16px;
     padding-top: 12px;
-    width: 100%;
-    margin-left: 0;
+    width: 100% !important; /* 100%を超えないように強制 */
+    margin-left: 0 !important;
     padding-left: 0;
+    box-sizing: border-box;
   }   
  } 
 /* ===== ソートボタン ===== */
@@ -557,7 +624,9 @@ h2 .hint {
   opacity: 0.35;
   pointer-events: none;
 }
-
+@media (max-width: 768px) {
+  .sortBtn {font-size: 10px;}
+}
 @media (max-width: 768px) {
   h2 { margin-bottom: 4px; }
   .group { margin-bottom: 16px; }
@@ -568,7 +637,10 @@ h2 .hint {
     flex-wrap: wrap;
   }
 }
-
+/* カウント数字やボタンの文字など */
+.count-num, .cta-button, .sortBtn, .toggle {
+  font-family: 'Montserrat', 'Zen Kaku Gothic New', sans-serif;
+}
  /* =========================================
       7. 楽曲カード表示
  ========================================= */
@@ -675,13 +747,23 @@ h2 .hint {
   }
   .card {padding:12px;  border-radius: 12px; }
 } 
-   
+@media (max-width: 450px) {
+  .title {font-size: 12px;  }
+  .meta { 
+    font-size: 9px; /* 歌唱・作詞などを小さく */
+  }
+  .desc {font-size: 8px;line-height: 1.4;}
+  .links a { 
+    font-size: 10px; /* リンクボタンを小さく */
+  }
+  .card {padding:8px;  border-radius: 12px; }
+  #cards {gap:10px;}
+}    
 /* プレイリストカード */
 #plcards { 
   margin-top: 20px; 
   display: grid; 
-  /* 1frの代わりに固定値を意識する */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 260px)); 
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   justify-content: center; /* 260pxの箱が並んだ後の余白を左右均等にする */
   padding:0; /* ← これを追加：section のデフォルトパディングを打ち消す */
@@ -720,9 +802,15 @@ h2 .hint {
   height: 100%;
   border: none;
 }
-
+h3 {
+  display: flex;
+  align-items: center; /* 縦中央揃え */
+  gap: 6px;            /* アイコンと文字の間隔 */
+  color: var(--c-text-main);
+  margin-bottom: 2px !important; /* 見出しのすぐ下の余白を固定 */
+}
 /* カード内のタイトル（h2）と説明（p）の微調整 */
-.plcard h2 {
+.plcard h3 {
   font-size: 1.1rem; /* カードに合わせて少し控えめに */
   margin-top: 0 !important; /* カード上部の余白をリセット */
 }
@@ -738,14 +826,15 @@ h2 .hint {
   .plcard {
     padding: 10px; /* 余白を詰める */
   }
-  .plcard h2 {
+  .plcard h3 {
     font-size: 14px;
   }
-}   
+}  
+ /* カードの並び（grid）と、その下の要素（hrなど）の間隔を広げる */
+.grid {
+    margin-bottom: 60px; /* ここを好きな数値に調整してください */
+}
 
-
- 
- 
     p {
       margin: 0 0 15px 30px;
       color:var(--c-text-sub2);
@@ -765,10 +854,18 @@ h2 .hint {
       color:var(--c-text-sub2);
       font-size: 14px; 
     }
+.kaidaprof {
+      margin: 0 0px 0px 0px;
+      color:var(--c-text-sub);
+      font-size: 13px; 
+    }
 /* リスト全体の左側に余白を作る */
 .main ul {
   padding-left: 4em; /* 1emで文字1つ分。2emなら2文字分右に寄ります */
 }
+.main ul li.kaidaprof {
+  margin-left: -2em; /* padding分をマイナスマージンで戻す */}
+
 /* pのすぐ後ろにulが来る場合だけ、pの下余白をゼロにする */
 p + ul {
   margin-top: -20px; /* もしくは ul の上側をマイナスで持ち上げる */
@@ -831,6 +928,7 @@ h2 + ul {
             background: #ccc;
             border-radius: 10px;
         }
+
 /* メンバー紹介全体の枠 */
         .member-profile {
             display: flex;
@@ -839,7 +937,7 @@ h2 + ul {
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 20px;
-            max-width: 500px;
+            max-width: 800px;
           background: rgba(255, 255, 255, 0.5); /* 透明感の核心 */
           border: 1px solid rgba(255, 255, 255, 0.4); /* 縁だけ少し光らせる */
           box-shadow: 0 4px 15px rgba(31, 42, 46, 0.05); /* 非常に薄い影 */
@@ -855,25 +953,46 @@ h2 + ul {
             flex-shrink: 0;
             background: #000;
         }
-
+/* 丸いアイコンの親要素 */
+        .icon-wrapper1 {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid; /* メンバーカラー等に変更可能 */
+            flex-shrink: 0;
+            background: #000;
+        }
         /* YouTubeサムネイルをアイコン化 */
         .icon-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
+.icon-wrapper1 img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         .member-text h3 {
             margin: 0 0 0px 0;
             font-size: 1.2rem;
           color: var(--c-text-main);
         }
-        .member-text p {
+       .member-text .profilebigbig-text {
             margin: 0;
             font-size: 0.9rem;
-            color: var(--c-text-sub);
+            color: var(--c-text-sub2);}
+        .member-text .profilebig-text {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--c-text-sub2);
         }
-
+.member-text .profile-text {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--c-text-sub2);
+        }
         /* スマホ対応 */
         @media (max-width: 600px) {
             .member-profile {
@@ -900,12 +1019,12 @@ h2 + ul {
         /* 基本のアイコン色 */
         .fa-youtube { color: #ff0000; }
         .fa-x-twitter { color: #000; }
-        .fa-mobile-screen-button, .fa-address-card, .fa-book-open { color: #444; }
-/* アイコン個別の色（特技を目立たせる） */
-    .fa-guitar { color: #d35400; }
-    .fa-file-audio { color: #2980b9; }
-    .fa-khanda { color: #2c3e50; }
-    .fa-music { color: #6c5ce7; }
+        .fa-circle-play { color: #444; }
+.fa-address-card, .fa-book-open,.fa-square-youtube { color: #444; }
+    .fa-guitar { color: #444; }
+    .fa-khanda,.fa-pen-nib { color: #444; }
+.fa-face-laugh-squint{ color: #444; }
+    .fa-music { color: #444; }
 
         /* ★ バッジの共通設定 ★ */
         .custom-badge {
@@ -926,16 +1045,135 @@ h2 + ul {
         }
 
         /* バッジごとの色設定 */
-        .bg-short    { background: #ff4757; right: -5px; } /* 1min (短いので位置詰め) */
-        .bg-official { background: #2ed573; right:-5px}               /* Official */
-        .bg-wiki     { background: #1e90ff; right:1px} /* Wiki */
-        .bg-sword   { background: #1e90ff; right:-5px}
-        .bg-guitar   { background: #1e90ff; right:-5px}
-.bg-special  { background: #eccc68; color: #333; } /* 黄色：特技用（目立つように） */
-    .bg-music    { background: #a4b0be; }               /* グレー：Original曲用 */
+        .bg-short    { background: #E80132; right: -2px; } /* 1min (短いので位置詰め) */
+        .bg-official { background: #00BFA5	; right:-5px}               /* Official */
+        .bg-wiki     { background: #1565C0; right:1px} /* Wiki */
+        .bg-sword   { background: #90bdd1; right:-5px}
+        .bg-guitar   { background: #fcf49f; color:#000; right:-5px}
+.bg-compose  { background: #487591;} /* 黄色：特技用（目立つように） */
+    .bg-special    { background: #38E500; right:-5px} 
+.bg-Debut { background: var(--c-main-dark); right:-5px} 
 
         /* スマホ対応 */
         @media (max-width: 600px) {
-            .member-profile { flex-direction: column; text-align: center; padding: 25px 15px; }
+            .member-profile { flex-direction: column; text-align: left; padding: 25px 15px; }
+          .member-text h3 {text-align: center;}
             .sns-links { justify-content: center; flex-wrap: wrap; gap: 25px; }
         }
+.sns-links1 { 
+            display: flex; 
+            gap: 22px; /* バッジ同士がぶつからないよう広めに設定 */
+            margin-top: 0px; 
+  margin-left: 45px;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* 入り切らない時に自動で折り返す */
+            align-items: left; 
+        }
+        .sns-links1 a {
+            font-size: 24px;
+            text-decoration: none;
+            transition: transform 0.2s;
+            position: relative;
+            display: inline-flex;
+        }
+        .sns-links1 a:hover { transform: scale(1.1); }
+ /* 基本のアイコン色 */
+        .fa-youtube { color: #ff0000; }
+        .fa-x-twitter { color: #000; }
+.fa-address-card, .fa-book-open,.fa-square-youtube { color: #444; }
+    .fa-music { color: #444; }
+
+        /* ★ バッジの共通設定 ★ */
+        .custom-badge {
+            position: absolute;
+        /* 位置の調整：下（bottom）を基準にすると「真ん中寄り」の調整がしやすいです */
+        bottom: 22px; 
+        right: -10px; 
+        
+        color: white;
+        font-size: 8px;        /* さらに小さく（最小クラス） */
+        font-weight: bold;
+        padding: 1px 4px;      /* 上下を極限まで詰める */
+        border-radius: 3px;    /* 角丸を少しシャープに */
+        line-height: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        white-space: nowrap;
+        pointer-events: none;  /* バッジがクリックの邪魔をしないように */
+        }
+
+        /* バッジごとの色設定 */
+        .bg-official { background: #00BFA5	; right:-5px}               /* Official */
+        .bg-wiki     { background: #1565C0; right:1px} /* Wiki */
+    .bg-special    { background: #38E500; right:-5px} 
+
+.ext-link::after {
+  content: "";
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  background-color: currentColor;
+  /* SVGアイコンの設定 */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 19H6c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h5V3H6a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-5h-2v5c0 .55-.45 1-1 1zm-4-16v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.ext-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+.sns-links {
+  margin-top: 30px; /* もしくは ul の上側をマイナスで持ち上げる */
+}
+/* YouTubeサムネイルを包むaタグの設定 */
+.thumb-link {
+    display: block;
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+/* 画像自体のサイズ制御 */
+.responsive-thumb {
+    width: 100%;           /* 基本は親要素の幅いっぱいに広がる */
+    max-width: 500px;      /* ただし、500px以上にはならない */
+    height: auto;          /* 縦横比を維持 */
+    display: block;
+    border-radius: 8px;    /* お好みで角を少し丸くすると綺麗です */
+    transition: opacity 0.3s;
+}
+
+/* スマホの時はもう少し小さくしたい場合（任意） */
+@media (max-width: 768px) {
+    .responsive-thumb {
+        max-width: 100%;   /* スマホ画面の端から端まで使う場合 */
+        /* もしスマホでも少し余白が欲しければ 90% などに調整 */
+    }
+}
+.text-setumei {
+    font-size: 13px;
+color:var(--c-text-main);
+  }
+/* 親要素（div）自体の余白でクリックが反応するのを防ぐ */
+.youtube-thumb {
+    display: block; 
+    text-align: center; /* 画像を中央に寄せる場合 */
+    margin-bottom: 20px;
+}
+
+/* リンクの範囲を画像サイズに限定する */
+.thumb-link-wrapper {
+    display: inline-block; /* これで範囲が中身（画像）のサイズになります */
+    line-height: 0;        /* 画像下の数ピクセルの隙間を消す */
+    cursor: pointer;
+}
+
+/* サムネイル画像の基本設定 */
+.responsive-thumb {
+    max-width: 100%;       /* 親の幅を超えない */
+    height: auto;
+    border-radius: 8px;    /* 角を少し丸くすると綺麗です */
+    transition: opacity 0.3s;
+}
