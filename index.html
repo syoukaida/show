@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>非公式ファンサイト</title>
+   <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" href="css/style.css">
-
+    <title>甲斐田晴 非公式ファンサイト | 甲斐田の曲を紹介だ！</title>
+    <meta name="description" content="にじさんじ所属VTuber「甲斐田晴」の楽曲検索・非公式ファンサイトです。">
+    <meta name="keywords" content="甲斐田晴, にじさんじ, VΔLZ, ROF-MAO, 楽曲検索, Vtuber, オリジナル曲">
+    <meta property="og:title" content="甲斐田晴 非公式ファンサイト | 甲斐田の曲を紹介だ！">
+    <meta property="og:description" content="甲斐田晴の楽曲を検索するための非公式ファンサイトです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://songshow-kaida.com/">
+    <meta property="og:image" content="https://songshow-kaida.com/images/ヒーロー_sp4.png">
+    <link rel="stylesheet" href="css/style.css">
   
   </head>
 
@@ -15,7 +20,8 @@
   <!-- ★ここ：グローバルメニュー -->
   <header class="site-header">
     <div class="header-inner">
-      <div class="logo">甲斐田晴 非公式ファンサイト</div>
+      <div class="logo">
+  <h1><a href="./">甲斐田晴 非公式ファンサイト</a></h1></div>
 
       <nav class="nav">
         <a href="./" class="current-page">HOME</a>
@@ -38,12 +44,15 @@
     <!-- スマホ用 -->
     <source id="hero-sp" media="(max-width: 768px)">
     <!-- PC用 -->
-    <img id="hero-pc" alt="ヒーロー画像">
+    <img id="hero-pc" alt="メインビジュアル" alt="甲斐田晴楽曲検索サイトのメインビジュアル">
   </picture>
 </section>
 
 <section class="main">
-  
+<p>該当する楽曲を絞り込んで検索することができます！<BR>
+  下部にある「紹介だ！」ボタンを押すと絞り込んだ楽曲を表示します！
+</p>  
+<div class="filter-group">  
 <h2>曲の印象  <span class="hint">
     ?
     <span class="hint-text">
@@ -52,6 +61,12 @@
 ・「曲の印象」選択時は印象の関連度順で結果を表示
     </span></h2>
 <div id="featureGrid" class="feature-grid"></div>  
+  <div class="unit-mini">
+  <button id="featureRandom3">ランダムに2つ</button>
+  <button id="featureClearAll">全解除</button>
+</div>
+ </div> 
+<div class="filter-group">  
 <h2>活動形態（ユニットなど）  <span class="hint">
     ?
     <span class="hint-text">
@@ -72,6 +87,8 @@
   <button id="unitSelectAll">全選択</button>
   <button id="unitClearAll">全解除</button>
 </div>
+</div>
+  <div class="filter-group">
 <h2>
   曲の速さ
   <span class="hint">
@@ -87,15 +104,17 @@
   </span>
 </h2>
 <div id="bpmButtons" class="group"></div>  
+</div>
+    <div class="filter-group">
 <h2>楽曲情報 <span class="hint">
     ?
     <span class="hint-text">
       ・複数選択可（AND検索）<br>
-      ・「曲の印象」未選択の場合はランダム順で結果を表示<br>
       ・「歌ってみた」には「3D映像」「ライブ披露済み/未披露」のみ適用
     </span></h2>
 <div id="mediaButtons" class="group"></div>
-
+</div>
+      
 <div class="footer-controls">
   <div class="controls-inner">
     <div id="countTop">
@@ -111,7 +130,7 @@
  </div>
 </div>  
  </div>   
-  
+ 
 <div class="sort-group">
   <button class="sortBtn active" data-sort="random">ランダム</button>
   <button class="sortBtn" data-sort="date">公開日順</button>
@@ -124,7 +143,7 @@
     
 <script>
   
-  const spImages = [
+   const spImages = [
     "images/ヒーロー_sp1.png",
     "images/ヒーロー_sp2.png",
     "images/ヒーロー_sp3.png",
@@ -186,7 +205,10 @@ const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌
 
  const unitButtons = () =>
   Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
-
+// 印象ボタンの要素リストを取得する共通関数（これを定義しないと動かない）
+const getFeatureButtons = () =>
+  Array.from(document.querySelectorAll("#featureGrid .toggle"));
+  
 document.getElementById("unitSelectAll").onclick = () => {
   unitButtons().forEach(btn => {
     const name = btn.textContent;
@@ -204,7 +226,36 @@ document.getElementById("unitClearAll").onclick = () => {
   });
   updateCount();
 }; 
+// 2. 「ランダムに3つ」ボタン（querySelectorAllをgetFeatureButtonsに置き換え）
+document.getElementById("featureRandom3").onclick = () => {
+  const btns = getFeatureButtons(); // ここを統一
+  if (btns.length === 0) return;
   
+  selectedFeatures.clear();
+  btns.forEach(b => b.classList.remove("active"));
+
+  const shuffled = btns.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 2);
+  selected.forEach(btn => {
+    const name = btn.textContent;
+    selectedFeatures.add(name);
+    btn.classList.add("active");
+  });
+
+  updateCount();
+  updateRelevanceButton();
+};
+// 3. 「全解除」ボタンの処理（ここを書き換え）
+document.getElementById("featureClearAll").onclick = () => {
+  const btns = getFeatureButtons(); // 定義した関数を使用
+  btns.forEach(btn => {
+    const name = btn.textContent;
+    selectedFeatures.delete(name);
+    btn.classList.remove("active");
+  });
+  updateCount();
+  updateRelevanceButton();
+};
 // mediaとライブを統合して順番通りに配置（2行に折り返される）
 const mediaTags = [
   "MV公開","3D映像公開","本人の作詞/作曲",
@@ -232,6 +283,7 @@ const featureTags = [
   "壮大・ドラマチック",
   "クセが強い・ユニーク"
 ];
+
 // ===== ボタン生成関数 =====
 function createButtons(list, containerId, selectedSet, limit=null, exclusiveGroups=[]){
   const container = document.getElementById(containerId);
@@ -274,6 +326,29 @@ if(containerId === "featureGrid"){
     container.appendChild(btn);
   });
 }
+
+// 全てのヒント要素を取得
+const hints = document.querySelectorAll('.hint');
+
+hints.forEach(hint => {
+  hint.addEventListener('click', function(e) {
+    // 1. 他の開いているヒントをすべて閉じる（1つずつ出したい場合）
+    hints.forEach(h => {
+      if (h !== hint) h.classList.remove('active');
+    });
+
+    // 2. クリックされたヒントの表示・非表示を切り替え
+    this.classList.toggle('active');
+
+    // 3. 吹き出し自体をクリックしても閉じないようにイベントの伝播を止める
+    e.stopPropagation();
+  });
+});
+
+// 画面のどこか（ヒント以外）をタップしたら吹き出しを閉じる
+document.addEventListener('click', function() {
+  hints.forEach(h => h.classList.remove('active'));
+});  
 // ===== CSV URL =====
 const CSV_URL = "data.csv";
 let allSongs=[];
@@ -596,6 +671,7 @@ if(r["サブスクリンク"]){
 const otherLinks = [];
 if(r["その他リンク"]) otherLinks.push(r["その他リンク"]);
 if(r["その他2"]) otherLinks.push(r["その他2"]);
+if(r["その他3"]) otherLinks.push(r["その他3"]);
 
 const labelCount = {};
 otherLinks.forEach(url=>{
