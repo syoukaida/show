@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+    <title>！制作中！にじさんじオリジナル曲検索</title>
+  <link rel="stylesheet" href="../css/style.css">
+    </head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="logo">甲斐田晴 非公式ファンサイト（別館）</div>
+        <nav class="nav">
+            <a href="../">HOME</a>
+            <a href="../playlists/">PLAYLISTS</a>
+            <a href="../about/">ABOUT</a>
+            <a href="/niji/"class="current-page">NIJI</a>
+        </nav>
+    </div>
+</header>
+
+<section class="main">
+<p9>！！制作中！！</p9>    
+<p8>似た要領でにじさんじ全体のオリジナル曲検索機能を作りたいと考えています<br>
+<BR>
+  ・ご協力いただける方は、<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>に「にじさんじのオリジナル楽曲の情報」を入力してください。（あればあるほど嬉しいです）<BR>
+  ・もしお手間でなければ特定ライバー、特定ユニットの楽曲一覧や明らかな追加漏れを<a href="https://t.co/gR2vWFgzhb" class="ext-link" target="_blank" rel="noopener noreferrer">マシュマロ</a>でいただけると非常に助かります<BR>
+  ・ライバー名プルダウンは順次整えます<BR>
+  ・このページ（NIJI）のみ「別館」として甲斐田要素を薄くする予定です<BR>
+  ・曲数が増える分、簡素化する部分や変更する項目が出ると思います
+</p8> 
+        <h1>にじさんじ楽曲検索</h1>
+  <div class="filter-group">  
+        <div class="search-container">
+            <div id="selected-tags" class="tags-area"></div>
+            <input type="text" id="liver-input" placeholder="ライバー名を選択・入力..." autocomplete="off">
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+        <div id="result-info">データを読み込み中...</div>
+    </div> 
+
+    <div class="filter-group"> 
+        <h2>曲の印象 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<br>・「曲の印象」選択時は関連度順で表示</span></span></h2>
+        <div id="featureGrid" class="feature-grid"></div>  
+    </div>  
+  
+    <div class="filter-group">
+        <h2>曲の速さ <span class="hint">? <span class="hint-text">・複数選択可（OR検索）</span></span></h2>
+        <div id="bpmButtons" class="group"></div>  
+    </div>
+
+    <div class="filter-group">
+        <h2>楽曲情報 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）</span></span></h2>
+        <div id="mediaButtons" class="group"></div>
+    </div>
+      
+    <div class="footer-controls">
+        <div class="controls-inner">
+            <div id="countTop">RESULT: <span class="count-num">0</span> SONGS FOUND</div>
+            <div id="generate">   
+                <div class="button-group">
+                    <button id="showBtn">紹介だ！<span class="showBtn-hint">(表示)</span></button>
+                    <button id="resetBtn">撤回だ！(リセット)</button>
+                </div>
+            </div>
+        </div>  
+    </div>    
+ 
+    <div class="sort-group">
+        <button class="sortBtn active" data-sort="random">ランダム</button>
+        <button class="sortBtn" data-sort="date">公開日順</button>
+        <button class="sortBtn" data-sort="views">再生数順</button>
+        <button class="sortBtn" data-sort="relevance">印象関連度順</button>
+    </div>  
+
+    <div id="cards"></div>
+</section>
+
+<script>
+// --- 設定 ---
+const LIVER_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSW7PUhYHRVlYxF4EdF-8RWnA42jUEU0nENn9ZKdD4BXtFIdVA6yk-zYjFl8VXQmrOy2kCkfBpznHhs/pub?gid=0&single=true&output=csv";
+const SONG_CSV_URL  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSA8LDeGPZhUvi-xpZL4AOZWYLpgkgNUbhcVlpWJam825QIUkGveFmYN7sT9WwxXgUqsv8-_HqtomjQ/pub?gid=0&single=true&output=csv";
+
+// --- 状態管理 ---
+let liverMaster = [];
+let allSongs = [];
+let selectedLivers = [];
+let selectedMedia = new Set(); 
+let selectedBPM = new Set();
+let selectedFeatures = new Set();
+let currentSort = "random";
+
+const input = document.getElementById('liver-input');
+const suggContainer = document.getElementById('suggestions');
+const tagsArea = document.getElementById('selected-tags');
+const resultInfo = document.getElementById('result-info');
+const cardsContainer = document.getElementById('cards');
+
+// --- タグ定義 ---
+const mediaTags = ["MV公開","3D映像公開","本人の作詞/作曲","有観客ライブ披露済み","有観客ライブ未披露","独特なコーレス"];
+const bpmTags = ["ゆっくり","中くらい","速い","かなり速い"];
+const featureTags = ["疾走感","しっとり・チル","温かい・優しい","盛り上がる","熱い・パワフル","ワイルド・攻撃的","爽やか","明るい・ハッピー","可愛い・ポップな","透明感","クール・かっこいい","オシャレ・スタイリッシュ","シリアス・ダーク","セクシー・色気がある","切ない・ノスタルジック","エモーショナル","壮大・ドラマチック","クセが強い・ユニーク"];
+
+// --- 初期化 ---
+async function initialize() {
+    try {
+        const [lRes, sRes] = await Promise.all([fetch(LIVER_CSV_URL), fetch(SONG_CSV_URL)]);
+        const lText = await lRes.text();
+        const sText = await sRes.text();
+
+        liverMaster = parseCSV(lText).map(row => ({
+            name: Object.values(row)[0].trim(),
+            kana: Object.values(row)[1] ? Object.values(row)[1].trim() : ""
+        }));
+
+        allSongs = parseCSV(sText);
+        
+        createButtons(mediaTags, "mediaButtons", selectedMedia); 
+        createButtons(bpmTags, "bpmButtons", selectedBPM);
+        createButtons(featureTags, "featureGrid", selectedFeatures);
+
+        resultInfo.textContent = "ライバーを1〜3名選択してください";
+        updateCount();
+    } catch (e) {
+        console.error(e);
+        resultInfo.textContent = "データの読み込みに失敗しました。";
+    }
+}
+
+// --- CSV解析 ---
+function parseCSV(text) {
+    const rows = [];
+    let current = [], value = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c == '"' && text[i + 1] == '"') { value += '"'; i++; }
+        else if (c == '"') inQuotes = !inQuotes;
+        else if (c == ',' && !inQuotes) { current.push(value); value = ""; }
+        else if ((c == '\n' || c == '\r') && !inQuotes) {
+            if (value || value === "") current.push(value);
+            if (current.length > 0) rows.push(current);
+            current = []; value = "";
+            if (c == '\r' && text[i + 1] == '\n') i++;
+        } else value += c;
+    }
+    if (value || value === "") current.push(value);
+    if (current.length > 0) rows.push(current);
+    const headers = rows[0];
+    return rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = row[i] ? row[i].trim() : "");
+        return obj;
+    });
+}
+
+// --- 検索・サジェスト ---
+// --- 検索・サジェスト ---
+function renderSuggestions(filterText = "") {
+    const val = filterText.trim().toLowerCase();
+    
+    // 文字数制限の判定
+    if (val !== "" && val.length === 1 && !/^[\u4E00-\u9FFF0-9]$/.test(val)) {
+        suggContainer.style.display = 'none';
+        return;
+    }
+  
+    // フィルタリングロジック
+    const matches = liverMaster.filter(l => {
+        if (selectedLivers.includes(l.name)) return false;
+        if (val === "") return true; 
+
+        // 1. 名前自体の前方一致
+        const nameMatch = (l.name || "").toLowerCase().startsWith(val);
+        
+        // 2. 読み（スペース区切り）のどれかに前方一致するか判定
+        // 例: "つきのみと みと mito" -> ["つきのみと", "みと", "mito"] に分解
+        const keywords = (l.kana || "").toLowerCase().split(/\s+/); 
+        const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
+        
+        return nameMatch || kanaMatch;
+    });
+
+    suggContainer.innerHTML = '';
+    
+    if (matches.length > 0) {
+        const fragment = document.createDocumentFragment();
+        matches.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = m.name;
+            div.onclick = (e) => {
+                e.stopPropagation();
+                addLiver(m.name); 
+                suggContainer.style.display = 'none'; 
+            };
+            fragment.appendChild(div);
+        });
+        suggContainer.appendChild(fragment);
+        suggContainer.style.display = 'block';
+    } else {
+        suggContainer.style.display = 'none';
+    }
+}
+function addLiver(name) {
+    if (selectedLivers.length < 3) {
+        selectedLivers.push(name);
+        updateUI();
+    }
+    input.value = '';
+    // 追加後にサジェストを閉じる
+    suggContainer.style.display = 'none';
+}
+
+function removeLiver(name) {
+    selectedLivers = selectedLivers.filter(l => l !== name);
+    updateUI();
+}
+
+function updateUI() {
+    // 選択済みタグの描画（×ボタン付き）
+    tagsArea.innerHTML = selectedLivers.map(l => 
+        `<span class="tag">${l}<span class="remove-btn" onclick="removeLiver('${l}')">×</span></span>`
+    ).join('');
+    
+    // 入力欄の活性・非活性制御
+    input.disabled = (selectedLivers.length >= 3);
+    input.placeholder = input.disabled ? "最大3名選択済みです" : "ライバー名を選択・入力...";
+    
+    // 楽曲リストとカウントの更新（filterSongsを呼び出し）
+    updateCount();
+}
+
+// --- ボタン生成 ---
+function createButtons(list, containerId, selectedSet) {
+    const container = document.getElementById(containerId);
+    list.forEach(item => {
+        const btn = document.createElement("div");
+        btn.textContent = item;
+        btn.className = "toggle";
+        btn.onclick = () => {
+            if (selectedSet.has(item)) {
+                selectedSet.delete(item);
+                btn.classList.remove("active");
+            } else {
+                selectedSet.add(item);
+                btn.classList.add("active");
+            }
+            updateCount();
+            if (containerId === "featureGrid") updateRelevanceButton();
+        };
+        container.appendChild(btn);
+    });
+}
+
+// --- カウント更新 ---
+function updateCount() {
+    const results = filterSongs();
+    const countTop = document.getElementById("countTop");
+    if (countTop) countTop.innerHTML = `RESULT: <span class="count-num">${results.length}</span> SONGS FOUND`;
+}
+
+function filterSongs() {
+    return allSongs.filter(song => {
+        // ライバー絞り込み
+        if (selectedLivers.length > 0) {
+            const singers = song["歌唱"] ? song["歌唱"].split(/[、,]+/).map(s => s.trim()) : [];
+            const matchAll = selectedLivers.every(sel => singers.includes(sel));
+            if (!matchAll) return false;
+        }
+        // メディア・BPM・印象の絞り込み (既存ロジック)
+        for (let t of selectedMedia) {
+            if (t === "有観客ライブ未披露") { if (song["有観客ライブ披露済み"] !== "FALSE") return false; }
+            else { if (song[t] !== "TRUE") return false; }
+        }
+        if (selectedBPM.size > 0) {
+            const bpm = parseInt(song["BPM"]) || 0;
+            let label = bpm <= 100 ? "ゆっくり" : bpm <= 139 ? "中くらい" : bpm <= 179 ? "速い" : "かなり速い";
+            if (!selectedBPM.has(label)) return false;
+        }
+        for (let f of selectedFeatures) { if ((parseInt(song[f]) || 0) < 1) return false; }
+        return true;
+    });
+}
+
+function updateRelevanceButton() {
+    const relevanceBtn = document.querySelector('.sortBtn[data-sort="relevance"]');
+    if (selectedFeatures.size === 0) {
+        relevanceBtn.classList.add("disabled");
+        if (currentSort === "relevance") switchSort("random");
+    } else {
+        relevanceBtn.classList.remove("disabled");
+    }
+}
+
+function switchSort(type) {
+    currentSort = type;
+    document.querySelectorAll(".sortBtn").forEach(b => b.classList.toggle("active", b.dataset.sort === type));
+}
+
+// --- 表示実行 ---
+document.getElementById("showBtn").onclick = () => {
+    cardsContainer.innerHTML = "";
+    let results = filterSongs();
+
+    if (currentSort === "random") results.sort(() => Math.random() - 0.5);
+    else if (currentSort === "date") results.sort((a, b) => new Date(b["公開日"]) - new Date(a["公開日"]));
+    else if (currentSort === "views") results.sort((a, b) => (parseInt(b["再生数"]) || 0) - (parseInt(a["再生数"]) || 0));
+    else if (currentSort === "relevance") {
+        results.sort((a, b) => {
+            const sumA = [...selectedFeatures].reduce((s, f) => s + (parseInt(a[f]) || 0), 0);
+            const sumB = [...selectedFeatures].reduce((s, f) => s + (parseInt(b[f]) || 0), 0);
+            return sumB - sumA;
+        });
+    }
+
+    results.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const thumbUrl = r["サムネ用リンク"] ? `https://img.youtube.com/vi/${r["サムネ用リンク"].match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1]}/hqdefault.jpg` : "";
+        
+        card.innerHTML = `
+            ${thumbUrl ? `<a href="${r["サムネ用リンク"]}" target="_blank"><div class="thumb"><img src="${thumbUrl}"></div></a>` : ""}
+            <div class="title">${r["曲名"]}</div>
+            <div class="meta">
+                歌唱：${r["歌唱"]}<br>
+                作詞：${r["作詞"]}<br>作曲：${r["作曲"]}<br>
+                公開日：${r["公開日"]}
+            </div>
+            ${r["説明"] ? `<div class="desc">${r["説明"]}</div>` : ""}
+            <div class="links">
+                ${r["MVリンク"] ? `<a href="${r["MVリンク"]}" target="_blank">公式MV</a>` : ""}
+                ${r["サブスクリンク"] ? `<a href="${r["サブスクリンク"]}" target="_blank">サブスク</a>` : ""}
+            </div>
+        `;
+        cardsContainer.appendChild(card);
+    });
+};
+
+// --- その他イベント ---
+document.querySelectorAll(".sortBtn").forEach(btn => {
+    btn.onclick = () => { if (!btn.classList.contains("disabled")) { switchSort(btn.dataset.sort); document.getElementById("showBtn").click(); } };
+});
+
+document.getElementById("resetBtn").onclick = () => {
+    selectedLivers = []; selectedMedia.clear(); selectedBPM.clear(); selectedFeatures.clear();
+    document.querySelectorAll(".toggle").forEach(b => b.classList.remove("active"));
+    cardsContainer.innerHTML = "";
+    switchSort("random");
+    updateUI();
+};
+
+input.addEventListener('focus', () => renderSuggestions(input.value));
+input.addEventListener('input', () => renderSuggestions(input.value));
+document.addEventListener('click', (e) => { if (!e.target.closest('.search-container')) suggContainer.style.display = 'none'; });
+
+initialize();
+</script>
+</body>
+</html>
