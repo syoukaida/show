@@ -179,7 +179,7 @@ h2::before {
   display: block;
   width: 30px;
   height: 30px;
-  background-image: url('kamon.png');
+  background-image: url('../images/mizuirokamon.png');
   background-size: contain;
   background-repeat: no-repeat;
 }
