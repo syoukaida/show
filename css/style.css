@@ -179,7 +179,7 @@ h2::before {
   display: block;
   width: 30px;
   height: 30px;
-  background-image: url('../images/mizuirokamon.png');
+  background-image: url('kamon.png');
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -858,6 +858,8 @@ h3 {
       margin: 0 0px 0px 0px;
       color:var(--c-text-sub);
       font-size: 13px; 
+  font-variant-numeric: tabular-nums; /* 数字の幅を一定にする */
+  white-space: pre-wrap; /* スペースをそのまま維持する */
     }
 /* リスト全体の左側に余白を作る */
 .main ul {
@@ -866,10 +868,7 @@ h3 {
 .main ul li.kaidaprof {
   margin-left: -2em; /* padding分をマイナスマージンで戻す */}
 
-/* pのすぐ後ろにulが来る場合だけ、pの下余白をゼロにする */
-p + ul {
-  margin-top: -20px; /* もしくは ul の上側をマイナスで持ち上げる */
-}
+
 h2 + ul {
   margin-top: -3px; /* もしくは ul の上側をマイナスで持ち上げる */
 }
