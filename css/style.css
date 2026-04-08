@@ -1176,3 +1176,20 @@ color:var(--c-text-main);
     border-radius: 8px;    /* 角を少し丸くすると綺麗です */
     transition: opacity 0.3s;
 }
+.search-box {
+  /* 元々style属性に書いてあった基本デザイン */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--c-bg-sub); /* 変数を使う */
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* クリックした時のデザイン */
+.search-box:focus {
+  outline: none;
+  border: 1.5px solid var(--c-kaida); /* ここで甲斐田カラーを適用 */
+  box-shadow: 0 0 5px var(--c-kaida-line);
+}
