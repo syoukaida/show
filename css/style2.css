@@ -10,11 +10,11 @@
   --c-kaida: #4DD7E3;
 
   /* 未選択時のデフォルトカラー */
-  --c-main-light:#2A4B71;
-  --c-main-dark:#001A2C;
-  --c-main-darker:#000000;
-  --c-sub-light:#606060;
-  --c-sub-dark:#606060;
+  --c-main-light:#1EC4EE;
+  --c-main-dark:#0068AF;
+  --c-main-darker:#2A4B71;
+  --c-sub-light:#FA7820;
+  --c-sub-dark:#E80132;
   --c-text-liver:#FFFFFF;
   --c-text-sb:#FFFFFF;
   --c-main-light-shadow: rgba(0,0,0,0.2);
