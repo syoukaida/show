@@ -132,7 +132,7 @@ body {
 
 /* ===== ヒーロー画像・メイン共通設定 ===== */
 .hero { width: 100%; }
-.hero img { width: 100%; height: auto; display: block; }
+.hero img { width: 50%; height: auto; display: block; }
 .main { width: 100%; } /* 基本は100%にしておく */
 
 /* PC版（画面が広い時だけ制限をかける） */
