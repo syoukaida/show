@@ -175,7 +175,7 @@ h2::before {
   display: block;
   width: 30px;
   height: 30px;
-  background-image: url('nijimark.png');
+  background-image: url('../images/nijimark.png');
   background-size: contain;
   background-repeat: no-repeat;
 }
