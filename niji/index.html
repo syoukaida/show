@@ -5,58 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
     <title>！制作中！にじさんじオリジナル曲検索</title>
-  <link rel="stylesheet" href="../css/style.css">
-    <style>
-    .coming-soon {
-        font-size: 50px;      /* ドデカサイズ */
-        font-weight: bold;    /* 太字 */
-        color: #333;          /* 文字の色（お好みで） */
-        margin: 30px 0;      /* 上下の余白をドカンと空ける *
-    }</style>
+  <link rel="stylesheet" href="../css/style2.css">
     </head>
 <body>
 <header class="site-header">
     <div class="header-inner">
-        <div class="logo">甲斐田晴 非公式ファンサイト（別館）</div>
-        <nav class="nav">
-            <a href="../">HOME</a>
-            <a href="../playlists/">PLAYLISTS</a>
-            <a href="../about/">ABOUT</a>
-            <a href="/niji/"class="current-page">NIJI</a>
-        </nav>
+         <div class="logo"><h1><a href="/niji/">にじさんじ 非公式ファンサイト</a></h1></div>
+      <div class="cta-group">
+        <a href="../" class="cta-button">甲斐田晴 楽曲詳細検索「甲斐田の曲を紹介だ！」</a>
+        <a href="https://www.nijisanji.jp/" class="cta-button1 ext-link2" target="_blank" rel="noopener noreferrer">にじさんじとは？</a>
+        </div>
     </div>
 </header>
-
+ <section class="hero">
+  <picture>
+    <img id="hero-pc" src="../images/kari.png" alt="仮画像">
+  </picture>
+</section>
+  
 <section class="main">
-<p class="coming-soon">！！制作中！！</p>
-<p8>似た要領でにじさんじ全体のオリジナル曲検索機能を作りたいと考えています<br>
+
+<p> <a href="../" class="cta-button">甲斐田晴 楽曲詳細検索「甲斐田の曲を紹介だ！」</a>と似た要領でにじさんじ全体のオリジナル曲検索機能を作りたいと考えています<br>
 <BR>
-  ・ご協力いただける方は、<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>に「にじさんじのオリジナル楽曲の情報」を入力してください。（あればあるほど嬉しいです）<BR>
-  ・もしお手間でなければ特定ライバー、特定ユニットの楽曲一覧や明らかな追加漏れを<a href="https://t.co/gR2vWFgzhb" class="ext-link" target="_blank" rel="noopener noreferrer">マシュマロ</a>でいただけると非常に助かります<BR>
-  ・ライバー名プルダウンは順次整えます<BR>
-  ・このページ（NIJI）のみ「別館」として甲斐田要素を薄くする予定です<BR>
-  ・曲数が増える分、簡素化する部分や変更する項目が出ると思います
-</p8> 
-        <h1>にじさんじオリジナル楽曲検索</h1>
-  <div class="filter-group">  
+  ・もしよければ、あなたの好きなにじさんじオリジナル曲について、こちらの<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>に「にじさんじのオリジナル楽曲の情報」「どんな印象の曲か」を入力してください。（あればあるほど嬉しいです）<BR>
+  ・追加してほしい曲一覧や漏れ抜け誤りを<a href="https://t.co/gR2vWFgzhb" class="ext-link" target="_blank" rel="noopener noreferrer">マシュマロ</a>でいただけると非常に助かります<BR>
+  <BR></p>
+ <p class="tiisaku"> ・現在の想定<BR>
+  ①ライバーが歌唱しているものを対象とする（例：弦月作曲のボカロ等歌唱曲、美夜子の電音部提供曲は対象外）<BR>
+  ②公式チャンネルかつ楽曲単体で聞ける状態のものを優先（例：倉持の「米系の食べ物」は本人チャンネルにショートがあるが、卯月コウの「鍋ラップ」は公式切り抜きがおそらく無い）<BR>
+  ③卒業済みライバーの楽曲については、現在も視聴が可能・容易なもののみを対象とする予定（例：ういはの「夢に向かって前ならえ！」はMVが公開されている）
+  </p>
+  
+
+</p> 
+
+  <div class="filter-group"> 
+    <h2>ライバーを選択 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<BR>・愛称でも検索可</span></span></h2>
+    <p class="tiisaku">・プルダウンは順次整えていきます。<BR>・名前とその読みだけでなく「委員長」等の愛称・通称でも検索できるようにしたいと思っています。追加すべき呼称があれば<a href="https://t.co/gR2vWFgzhb" class="ext-link" target="_blank" rel="noopener noreferrer">マシュマロ</a>へお願いします<BR>・非公式wikiのまとめページに記載の無いサブカラーをご存じの方もマシュマロで教えていただけるとありがたいです（「サブカラーだという確証は無いが、グッズでこの色が使われがち」等でも嬉しいです）</P>
         <div class="search-container">
             <div id="selected-tags" class="tags-area"></div>
             <input type="text" id="liver-input" placeholder="ライバー名を選択・入力..." autocomplete="off">
             <div id="suggestions" class="suggestions"></div>
         </div>
+  <div class="unit-mini">
+  <button id="liverClearAll">ライバー選択を全解除</button>
+</div>
         <div id="result-info">データを読み込み中...</div>
+  
     </div> 
 
     <div class="filter-group"> 
         <h2>曲の印象 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<br>・「曲の印象」選択時は関連度順で表示</span></span></h2>
+      <p class="deka">！！！！未実装！！！！</p>
+      <P class="tiisaku">現在は甲斐田ソロ・VΔLZ・ろふまお曲のみ設定済（「紹介だ！」をそのまま移植）</P>
+      <P>曲数をある程度増やせたら、印象値の設定に取り掛かる予定です。</P>
+      <p>もしよければ、あなたの好きな曲について、こちらの<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>で「どんな印象の曲か」を教えてください！！</p>
         <div id="featureGrid" class="feature-grid"></div>  
+      <div class="unit-mini">
+  <button id="featureRandom2">ランダムに2つ</button>
+  <button id="featureClearAll">全解除</button>
+</div>
     </div>  
+<div class="filter-group">  
+<h2>歌唱ライバー<span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（OR検索）<br>
+      ・暫定取り扱い　男女両方：緑仙でびるんメリー　男：ベル弦月　女：魔使蝸堂<BR>
+    </span></h2>  
+<!-- 通常ユニット -->
+<div id="unitButtons" class="group"></div> 
+  <div class="unit-mini">
+  <button id="unitSelectAll">全選択</button>
+  <button id="unitClearAll">全解除</button>
+</div>
   
-    <div class="filter-group">
-        <h2>曲の速さ <span class="hint">? <span class="hint-text">・複数選択可（OR検索）</span></span></h2>
-        <div id="bpmButtons" class="group"></div>  
-    </div>
-
+</div>
     <div class="filter-group">
         <h2>楽曲情報 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）</span></span></h2>
         <div id="mediaButtons" class="group"></div>
@@ -67,8 +91,8 @@
             <div id="countTop">RESULT: <span class="count-num">0</span> SONGS FOUND</div>
             <div id="generate">   
                 <div class="button-group">
-                    <button id="showBtn">紹介だ！<span class="showBtn-hint">(表示)</span></button>
-                    <button id="resetBtn">撤回だ！(リセット)</button>
+                    <button id="showBtn">結果を表示<span class="showBtn-hint"></span></button>
+                    <button id="resetBtn"><ruby>最初<rt>いち</rt></ruby>から</button>
                 </div>
             </div>
         </div>  
@@ -77,7 +101,6 @@
     <div class="sort-group">
         <button class="sortBtn active" data-sort="random">ランダム</button>
         <button class="sortBtn" data-sort="date">公開日順</button>
-        <button class="sortBtn" data-sort="views">再生数順</button>
         <button class="sortBtn" data-sort="relevance">印象関連度順</button>
     </div>  
 
@@ -86,15 +109,15 @@
 
 <script>
 // --- 設定 ---
-const LIVER_CSV_URL = "liver.csv";
-const SONG_CSV_URL  = "song.csv";
+const LIVER_CSV_URL = "liver0426.csv";
+const SONG_CSV_URL  = "song0426.csv";
 
 // --- 状態管理 ---
 let liverMaster = [];
 let allSongs = [];
 let selectedLivers = [];
+let selectedUnits = new Set();
 let selectedMedia = new Set(); 
-let selectedBPM = new Set();
 let selectedFeatures = new Set();
 let currentSort = "random";
 
@@ -105,10 +128,10 @@ const resultInfo = document.getElementById('result-info');
 const cardsContainer = document.getElementById('cards');
 
 // --- タグ定義 ---
-const mediaTags = ["MV公開","3D映像公開","本人の作詞/作曲","有観客ライブ披露済み","有観客ライブ未披露","独特なコーレス"];
-const bpmTags = ["ゆっくり","中くらい","速い","かなり速い"];
+const mediaTags = ["MV公開","踊ろう！","ライバー自身が制作（作曲・イラスト等）","デジタルリリース","フィジカルCDリリース","独特なコーレス","ファンメイド","カラオケ（DAM）","カラオケ（JOYSOUND）"];
 const featureTags = ["疾走感","しっとり・チル","温かい・優しい","盛り上がる","熱い・パワフル","ワイルド・攻撃的","爽やか","明るい・ハッピー","可愛い・ポップな","透明感","クール・かっこいい","オシャレ・スタイリッシュ","シリアス・ダーク","セクシー・色気がある","切ない・ノスタルジック","エモーショナル","壮大・ドラマチック","クセが強い・ユニーク"];
-
+const units = ["男性","女性","男女混合","外部を含む"];
+const specialUnits = ["箱内カバー"];  
 // --- 初期化 ---
 async function initialize() {
     try {
@@ -116,23 +139,121 @@ async function initialize() {
         const lText = await lRes.text();
         const sText = await sRes.text();
 
-        liverMaster = parseCSV(lText).map(row => ({
-            name: Object.values(row)[0].trim(),
-            kana: Object.values(row)[1] ? Object.values(row)[1].trim() : ""
-        }));
+        // ライバーマスターの読み込み
+       liverMaster = parseCSV(lText).map(row => ({
+    name: row["名前"] ? row["名前"].trim() : "", 
+    kana: row["読み"] ? row["読み"].trim() : "",
+         fullKana: row["完全読み"] ? row["完全読み"].trim() : "",
+         VtL: row["VtL"] || "",
+         isGraduated: row["卒業"] === "TRUE",
+    // CSVのカラム名と変数を紐付け
+    lColorL: row["淡いライバーカラー"] || "#f0f0f0",
+    lColorD: row["濃いライバーカラー"] || "#2b5797",
+    lColorS: row["超濃いライバーカラー"] || "#2b5797",     
+    sColorL: row["淡いサブカラー"] || "#e0e0e0",
+    sColorD: row["濃いサブカラー"] || "#666666",
+    lText: row["ライバー文字色"] || "#ffffff",
+    sText: row["サブ文字色"] || "#ffffff"
+}));
 
         allSongs = parseCSV(sText);
         
+// --- initialize関数の中 ---
+
+// 1. 通常ユニットのボタンを作る
+createButtons(units, "unitButtons", selectedUnits);
+
+// 2. 特別ユニット用の「ラベル」を直接HTMLとして差し込む
+const unitContainer = document.getElementById("unitButtons");
+const labelSpan = document.createElement("span");
+labelSpan.className = "special-label"; // CSSで調整するためのクラス
+labelSpan.textContent = "※追加表示";
+unitContainer.appendChild(labelSpan); // ここで「文字」を無理やり入れる
+
+// 3. その後に特別ユニットのボタンを作る
+createButtons(specialUnits, "unitButtons", selectedUnits, "is-special");
         createButtons(mediaTags, "mediaButtons", selectedMedia); 
-        createButtons(bpmTags, "bpmButtons", selectedBPM);
         createButtons(featureTags, "featureGrid", selectedFeatures);
 
-        resultInfo.textContent = "ライバーを1〜3名選択してください";
+        resultInfo.textContent = "ライバーを選択してください";
         updateCount();
     } catch (e) {
         console.error(e);
         resultInfo.textContent = "データの読み込みに失敗しました。";
     }
+  // --- 共通要素取得関数 ---
+// 歌唱ライバー（性別）のボタン
+const getUnitButtons = () => Array.from(document.querySelectorAll("#unitButtons .toggle"));
+// 印象のボタン
+const getFeatureButtons = () => Array.from(document.querySelectorAll("#featureGrid .toggle"));
+
+
+// 【1. ライバー選択の全解除】
+document.getElementById("liverClearAll").onclick = () => {
+    selectedLivers = []; // 配列を空にする
+    updateUI();          // これを呼ぶことでタグの消去とサイトカラーのリセットが走る
+};
+
+
+// 【2. 歌唱ライバー（性別）の全選択】
+document.getElementById("unitSelectAll").onclick = () => {
+    const btns = getUnitButtons();
+    btns.forEach(btn => {
+        const name = btn.textContent;
+        selectedUnits.add(name);
+        btn.classList.add("active");
+    });
+    updateCount();
+};
+
+
+// 【3. 歌唱ライバー（性別）の全解除】
+document.getElementById("unitClearAll").onclick = () => {
+    const btns = getUnitButtons();
+    btns.forEach(btn => {
+        const name = btn.textContent;
+        selectedUnits.delete(name);
+        btn.classList.remove("active");
+    });
+    updateCount();
+};
+
+
+// 【4. 曲の印象のランダム2つ】
+document.getElementById("featureRandom2").onclick = () => {
+    const btns = getFeatureButtons();
+    if (btns.length === 0) return;
+
+    // 一旦リセット
+    selectedFeatures.clear();
+    btns.forEach(b => b.classList.remove("active"));
+
+    // シャッフルして2つ抽出
+    const shuffled = btns.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 2);
+    
+    selected.forEach(btn => {
+        const name = btn.textContent;
+        selectedFeatures.add(name);
+        btn.classList.add("active");
+    });
+
+    updateCount();
+    updateRelevanceButton();
+};
+
+
+// 【5. 曲の印象の全解除】
+document.getElementById("featureClearAll").onclick = () => {
+    const btns = getFeatureButtons();
+    btns.forEach(btn => {
+        const name = btn.textContent;
+        selectedFeatures.delete(name);
+        btn.classList.remove("active");
+    });
+    updateCount();
+    updateRelevanceButton();
+};
 }
 
 // --- CSV解析 ---
@@ -161,7 +282,7 @@ function parseCSV(text) {
     });
 }
 
-// --- 検索・サジェスト ---
+
 // --- 検索・サジェスト ---
 function renderSuggestions(filterText = "") {
     const val = filterText.trim().toLowerCase();
@@ -184,8 +305,8 @@ function renderSuggestions(filterText = "") {
         // 例: "つきのみと みと mito" -> ["つきのみと", "みと", "mito"] に分解
         const keywords = (l.kana || "").toLowerCase().split(/\s+/); 
         const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
-        
-        return nameMatch || kanaMatch;
+        const fullKanaMatch = (l.fullKana || "").toLowerCase() === val;
+        return nameMatch || kanaMatch|| fullKanaMatch;
     });
 
     suggContainer.innerHTML = '';
@@ -195,6 +316,9 @@ function renderSuggestions(filterText = "") {
         matches.forEach(m => {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
+          if (m.isGraduated) {
+                div.classList.add('is-graduated');
+            }
             div.textContent = m.name;
             div.onclick = (e) => {
                 e.stopPropagation();
@@ -209,15 +333,7 @@ function renderSuggestions(filterText = "") {
         suggContainer.style.display = 'none';
     }
 }
-function addLiver(name) {
-    if (selectedLivers.length < 3) {
-        selectedLivers.push(name);
-        updateUI();
-    }
-    input.value = '';
-    // 追加後にサジェストを閉じる
-    suggContainer.style.display = 'none';
-}
+
 
 function removeLiver(name) {
     selectedLivers = selectedLivers.filter(l => l !== name);
@@ -225,19 +341,72 @@ function removeLiver(name) {
 }
 
 function updateUI() {
-    // 選択済みタグの描画（×ボタン付き）
-    tagsArea.innerHTML = selectedLivers.map(l => 
-        `<span class="tag">${l}<span class="remove-btn" onclick="removeLiver('${l}')">×</span></span>`
-    ).join('');
+    // --- 1. 選択済みタグの描画 ---
+    tagsArea.innerHTML = selectedLivers.map(name => {
+        const d = liverMaster.find(l => l.name === name);
+        if (!d) return "";
+        return `<span class="tag" style="background-color: ${d.lColorL}; border-color: ${d.lColorD}; color: ${d.lText};">
+                    ${name}
+                    <span class="remove-btn" onclick="removeLiver('${name}')" style="color: ${d.lText};">×</span>
+                </span>`;
+    }).join('');
+
+    const root = document.documentElement;
+    const showBtn = document.getElementById("showBtn");
+
+    // --- 2. サイト全体のカラー連動 ---
+    if (selectedLivers.length > 0) {
+        const d = liverMaster.find(l => l.name === selectedLivers[0]);
+        
+        if (d) {
+            // CSS変数を上書き（選択したライバーの色にする）
+            root.style.setProperty('--c-main-light', d.lColorL);
+            root.style.setProperty('--c-main-dark', d.lColorD);
+          root.style.setProperty('--c-main-darker', d.lColorS);
+            root.style.setProperty('--c-sub-light', d.sColorL);
+            root.style.setProperty('--c-sub-dark', d.sColorD);
+            root.style.setProperty('--c-text-liver', d.lText);
+            root.style.setProperty('--c-text-sb', d.sText);
+            
+            // ★影用の変数（ここで初めて計算してセットする）
+            root.style.setProperty('--c-main-light-shadow', d.lColorL + "4D");
+          
+      const vtlText = d["VtL"] ? d["VtL"] : "結果を表示";
+            showBtn.innerHTML = `${vtlText}<span class="showBtn-hint"></span>`;
+          }
+      
+    } else {
+        // --- ★リセット機構：全てのプロパティを削除してデフォルトに戻す ---
+        root.style.removeProperty('--c-main-light');
+        root.style.removeProperty('--c-main-dark');
+      root.style.removeProperty('--c-main-darker');
+        root.style.removeProperty('--c-sub-light');
+        root.style.removeProperty('--c-sub-dark');
+        root.style.removeProperty('--c-text-liver');
+        root.style.removeProperty('--c-text-sb');
+        root.style.removeProperty('--c-main-light-shadow'); // 影も忘れず削除
+        if (showBtn) {
+        showBtn.innerHTML = `結果を表示<span class="showBtn-hint"></span>`;
+    }
+    }
+
+    // --- 3. 入力欄・サジェストのリセット ---
+    input.disabled = false;
+    input.placeholder = "ライバー名を選択・入力...";
+    if (suggContainer) suggContainer.style.display = 'none';
     
-    // 入力欄の活性・非活性制御
-    input.disabled = (selectedLivers.length >= 3);
-    input.placeholder = input.disabled ? "最大3名選択済みです" : "ライバー名を選択・入力...";
-    
-    // 楽曲リストとカウントの更新（filterSongsを呼び出し）
     updateCount();
 }
-
+// addLiver: ライバー選択時に実行
+function addLiver(name) {
+    if (!selectedLivers.includes(name)) {
+        selectedLivers.push(name);
+        updateUI(); 
+        input.value = '';
+        // スマホなどで入力欄からフォーカスを外す場合は以下を追加
+        // input.blur();
+    }
+}
 // --- ボタン生成 ---
 function createButtons(list, containerId, selectedSet) {
     const container = document.getElementById(containerId);
@@ -275,16 +444,32 @@ function filterSongs() {
             const matchAll = selectedLivers.every(sel => singers.includes(sel));
             if (!matchAll) return false;
         }
-        // メディア・BPM・印象の絞り込み (既存ロジック)
+      const songUnitStr = song["男女"] || "";
+        const songUnitArray = songUnitStr.split(/[、,]+/).map(u => u.trim()).filter(u => u !== "");
+
+        const hasSelectedAny = selectedUnits.size > 0;
+        
+        // その曲が「特別ユニット（歌ってみた等）」に該当するかチェック
+        const isSpecialSong = songUnitArray.some(u => specialUnits.includes(u));
+
+        if (hasSelectedAny) {
+            // 【ボタンが押されている場合】
+            // 選択されたボタン（selectedUnits）のいずれかが、曲のユニット（songUnitArray）に含まれているか判定
+            const isMatched = songUnitArray.some(u => selectedUnits.has(u));
+            if (!isMatched) return false;
+        } else {
+            // 【ボタンが1つも押されていない場合】
+            // 特別ユニット（歌ってみた等）は隠し、それ以外の通常曲（男性・女性など）を表示する
+            if (isSpecialSong) return false;
+            // ユニット名が空欄のデータも一応除外
+            if (songUnitArray.length === 0) return false;
+        }
+        // --- 楽曲情報の絞り込み（一括判定） ---
         for (let t of selectedMedia) {
-            if (t === "有観客ライブ未披露") { if (song["有観客ライブ披露済み"] !== "FALSE") return false; }
-            else { if (song[t] !== "TRUE") return false; }
+            // 列名がそのままタグ名と一致しているので、シンプルにTRUE判定
+            if (song[t] !== "TRUE") return false;
         }
-        if (selectedBPM.size > 0) {
-            const bpm = parseInt(song["BPM"]) || 0;
-            let label = bpm <= 100 ? "ゆっくり" : bpm <= 139 ? "中くらい" : bpm <= 179 ? "速い" : "かなり速い";
-            if (!selectedBPM.has(label)) return false;
-        }
+   
         for (let f of selectedFeatures) { if ((parseInt(song[f]) || 0) < 1) return false; }
         return true;
     });
@@ -310,9 +495,12 @@ document.getElementById("showBtn").onclick = () => {
     cardsContainer.innerHTML = "";
     let results = filterSongs();
 
-    if (currentSort === "random") results.sort(() => Math.random() - 0.5);
-    else if (currentSort === "date") results.sort((a, b) => new Date(b["公開日"]) - new Date(a["公開日"]));
-    else if (currentSort === "views") results.sort((a, b) => (parseInt(b["再生数"]) || 0) - (parseInt(a["再生数"]) || 0));
+    if (currentSort === "random") {
+        results.sort(() => Math.random() - 0.5);
+    } 
+    else if (currentSort === "date") {
+        results.sort((a, b) => new Date(b["公開日"]) - new Date(a["公開日"]));
+    } 
     else if (currentSort === "relevance") {
         results.sort((a, b) => {
             const sumA = [...selectedFeatures].reduce((s, f) => s + (parseInt(a[f]) || 0), 0);
@@ -330,13 +518,20 @@ document.getElementById("showBtn").onclick = () => {
             ${thumbUrl ? `<a href="${r["サムネ用リンク"]}" target="_blank"><div class="thumb"><img src="${thumbUrl}"></div></a>` : ""}
             <div class="title">${r["曲名"]}</div>
             <div class="meta">
-                歌唱：${r["歌唱"]}<br>
-                作詞：${r["作詞"]}<br>作曲：${r["作曲"]}<br>
-                公開日：${r["公開日"]}
+                <div>
+            歌唱：${r["ユニット"] ? `${r["ユニット"]}（${r["歌唱"]}）` : r["歌唱"]}
+        </div>
+                ${r["備考"] ? `<div>${r["備考"]}</div>` : ""}
+                 ${r["備考2"] ? `<div>${r["備考2"]}</div>` : ""}
+                  ${r["備考3"] ? `<div>${r["備考3"]}</div>` : ""}
+                ${r["公開日"] ? `<div>公開日：${r["公開日"]}</div>` : ""}
             </div>
-            ${r["説明"] ? `<div class="desc">${r["説明"]}</div>` : ""}
+            
             <div class="links">
                 ${r["MVリンク"] ? `<a href="${r["MVリンク"]}" target="_blank">公式MV</a>` : ""}
+                ${r["3Dリンク"] ? `<a href="${r["3Dリンク"]}" target="_blank">3D動画</a>` : ""}
+                ${r["振付リンク"] ? `<a href="${r["振付リンク"]}" target="_blank">振付動画</a>` : ""}
+                 ${r["振付リンク2"] ? `<a href="${r["振付リンク2"]}" target="_blank">振付動画2</a>` : ""}
                 ${r["サブスクリンク"] ? `<a href="${r["サブスクリンク"]}" target="_blank">サブスク</a>` : ""}
             </div>
         `;
@@ -350,7 +545,7 @@ document.querySelectorAll(".sortBtn").forEach(btn => {
 });
 
 document.getElementById("resetBtn").onclick = () => {
-    selectedLivers = []; selectedMedia.clear(); selectedBPM.clear(); selectedFeatures.clear();
+    selectedLivers = []; selectedUnits.clear(); selectedMedia.clear(); selectedFeatures.clear();
     document.querySelectorAll(".toggle").forEach(b => b.classList.remove("active"));
     cardsContainer.innerHTML = "";
     switchSort("random");
@@ -362,6 +557,8 @@ input.addEventListener('input', () => renderSuggestions(input.value));
 document.addEventListener('click', (e) => { if (!e.target.closest('.search-container')) suggContainer.style.display = 'none'; });
 
 initialize();
+  
+
 </script>
 </body>
 </html>
