@@ -167,7 +167,7 @@ h2 {
   display: flex;
   align-items: center; /* 縦中央揃え */
   gap: 6px;            /* アイコンと文字の間隔 */
-  color: var(--c-text-main);
+  color: var(--c-main-darker);
   margin-bottom: 2px !important; /* 見出しのすぐ下の余白を固定 */
 }
 h2::before {
