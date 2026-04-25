@@ -393,7 +393,7 @@ h2:has(+ #specialUnitButtons) .hint-text {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px; /* グループ間の隙間 */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* 控えめな縁取り */
+  border: 1px solid var(--c-main-light); /* 控えめな縁取り */
 }
 
 /* グループ内の見出し余白を調整 */
