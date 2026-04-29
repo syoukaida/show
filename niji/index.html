@@ -57,8 +57,8 @@
         <h2>曲の印象 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<br>・「曲の印象」選択時は関連度順で表示</span></span></h2>
       <p class="deka">！！！！未実装！！！！</p>
       <P class="tiisaku">現在は甲斐田ソロ・VΔLZ・ろふまお曲のみ設定済（「紹介だ！」をそのまま移植）</P>
-      <P>曲数をある程度増やせたら、印象値の設定に取り掛かる予定です。</P>
-      <p>もしよければ、あなたの好きな曲について、こちらの<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>で「どんな印象の曲か」を教えてください！！</p>
+      <P class="tiisaku">曲数をある程度増やせたら、印象値の設定に取り掛かる予定です。</P>
+      <p class="tiisaku">もしよければ、あなたの好きな曲について、こちらの<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>で「どんな印象の曲か」を教えてください！！</p>
         <div id="featureGrid" class="feature-grid"></div>  
       <div class="unit-mini">
   <button id="featureRandom2">ランダムに2つ</button>
@@ -78,7 +78,7 @@
   <button id="unitSelectAll">全選択</button>
   <button id="unitClearAll">全解除</button>
 </div>
-  
+ <div id="optionButtons" class="group option-group"></div> 
 </div>
     <div class="filter-group">
         <h2>楽曲情報 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）</span></span></h2>
@@ -108,14 +108,16 @@
 
 <script>
 // --- 設定 ---
-const LIVER_CSV_URL = "liver04261.csv";
-const SONG_CSV_URL  = "song0426.csv";
+const LIVER_CSV_URL = "liver0429.csv";
+const SONG_CSV_URL  = "song0429.csv";
 
 // --- 状態管理 ---
 let liverMaster = [];
 let allSongs = [];
 let selectedLivers = [];
 let selectedUnits = new Set();
+let showExternal = true; // 「外部」曲を表示するか
+let showCover = false;    // 「箱内カバー」を表示するか
 let selectedMedia = new Set(); 
 let selectedFeatures = new Set();
 let currentSort = "random";
@@ -129,8 +131,11 @@ const cardsContainer = document.getElementById('cards');
 // --- タグ定義 ---
 const mediaTags = ["MV公開","踊ろう！","ライバー自身が制作（作曲・イラスト等）","デジタルリリース","フィジカルCDリリース","独特なコーレス","ファンメイド","カラオケ（DAM）","カラオケ（JOYSOUND）"];
 const featureTags = ["疾走感","しっとり・チル","温かい・優しい","盛り上がる","熱い・パワフル","ワイルド・攻撃的","爽やか","明るい・ハッピー","可愛い・ポップな","透明感","クール・かっこいい","オシャレ・スタイリッシュ","シリアス・ダーク","セクシー・色気がある","切ない・ノスタルジック","エモーショナル","壮大・ドラマチック","クセが強い・ユニーク"];
-const units = ["男性","女性","男女混合","外部を含む"];
-const specialUnits = ["箱内カバー"];  
+const units = ["男性ソロ","男性ユニット","女性ソロ","女性ユニット","男女混合"];
+const displayOptions = [
+    { id: "external", label: "外部コラボを含める" },
+    { id: "cover", label: "箱内カバーを含める" }
+];
   
   
 // --- 初期化 ---
@@ -168,18 +173,31 @@ async function initialize() {
         
 // --- initialize関数の中 ---
 
-// 1. 通常ユニットのボタンを作る
-createButtons(units, "unitButtons", selectedUnits);
+// 1. 通常ユニットボタン生成
+    createButtons(units, "unitButtons", selectedUnits);
 
-// 2. 特別ユニット用の「ラベル」を直接HTMLとして差し込む
-const unitContainer = document.getElementById("unitButtons");
-const labelSpan = document.createElement("span");
-labelSpan.className = "special-label"; // CSSで調整するためのクラス
-labelSpan.textContent = "※追加表示";
-unitContainer.appendChild(labelSpan); // ここで「文字」を無理やり入れる
+    // 2. 外部・カバースイッチの生成
+    const optionContainer = document.getElementById("optionButtons");
+    optionContainer.innerHTML = ""; // 初期化
+    displayOptions.forEach(opt => {
+        const btn = document.createElement("div");
+        btn.textContent = opt.label;
+        btn.className = "toggle";
+        
+        // 初期状態の反映（外部ON、カバーOFF）
+        if (opt.id === "external" && showExternal) btn.classList.add("active");
+        if (opt.id === "cover" && showCover) btn.classList.add("active");
 
-// 3. その後に特別ユニットのボタンを作る
-createButtons(specialUnits, "unitButtons", selectedUnits, "is-special");
+        btn.onclick = () => {
+            if (opt.id === "external") showExternal = !showExternal;
+            if (opt.id === "cover") showCover = !showCover;
+            
+            btn.classList.toggle("active");
+            updateCount();
+        };
+        optionContainer.appendChild(btn);
+    });
+      
         createButtons(mediaTags, "mediaButtons", selectedMedia); 
         createButtons(featureTags, "featureGrid", selectedFeatures);
       
@@ -317,7 +335,8 @@ function renderSuggestions(filterText = "") {
         // 例: "つきのみと みと mito" -> ["つきのみと", "みと", "mito"] に分解
         const keywords = (l.kana || "").toLowerCase().split(/\s+/); 
         const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
-        const fullKanaMatch = (l.fullKana || "").toLowerCase() === val;
+        const fullKanaKeywords = (l.fullKana || "").toLowerCase().split(/\s+/);
+const fullKanaMatch = fullKanaKeywords.some(keyword => keyword === val);
         return nameMatch || kanaMatch|| fullKanaMatch;
     });
 
@@ -457,25 +476,24 @@ function filterSongs() {
             const matchAll = selectedLivers.every(sel => singers.includes(sel));
             if (!matchAll) return false;
         }
-      const songUnitStr = song["男女"] || "";
+      
+      const isExternal = song["外部"] === "TRUE";
+        const isCover = song["箱内カバー"] === "TRUE";
+      
+       // showExternalがfalse（スイッチOFF）のとき、外部曲なら除外
+        if (!showExternal && isExternal) return false;
+        // showCoverがfalse（スイッチOFF）のとき、カバー曲なら除外
+        if (!showCover && isCover) return false;
+      
+        // 3. ユニット形態（歌唱ライバーグループ）の絞り込み (OR検索)
+        const songUnitStr = song["男女"] || "";
         const songUnitArray = songUnitStr.split(/[、,]+/).map(u => u.trim()).filter(u => u !== "");
 
-        const hasSelectedAny = selectedUnits.size > 0;
-        
-        // その曲が「特別ユニット（歌ってみた等）」に該当するかチェック
-        const isSpecialSong = songUnitArray.some(u => specialUnits.includes(u));
-
-        if (hasSelectedAny) {
-            // 【ボタンが押されている場合】
-            // 選択されたボタン（selectedUnits）のいずれかが、曲のユニット（songUnitArray）に含まれているか判定
+        if (songUnitArray.length === 0) return false;
+      
+        if (selectedUnits.size > 0) {
             const isMatched = songUnitArray.some(u => selectedUnits.has(u));
             if (!isMatched) return false;
-        } else {
-            // 【ボタンが1つも押されていない場合】
-            // 特別ユニット（歌ってみた等）は隠し、それ以外の通常曲（男性・女性など）を表示する
-            if (isSpecialSong) return false;
-            // ユニット名が空欄のデータも一応除外
-            if (songUnitArray.length === 0) return false;
         }
         // --- 楽曲情報の絞り込み（一括判定） ---
         for (let t of selectedMedia) {
@@ -558,13 +576,43 @@ document.querySelectorAll(".sortBtn").forEach(btn => {
 });
 
 document.getElementById("resetBtn").onclick = () => {
-    selectedLivers = []; selectedUnits.clear(); selectedMedia.clear(); selectedFeatures.clear();
-    document.querySelectorAll(".toggle").forEach(b => b.classList.remove("active"));
-    cardsContainer.innerHTML = "";
-    switchSort("random");
-    updateUI();
-};
+    // 1. 状態（データ）のリセット
+    selectedLivers = [];
+    selectedUnits.clear();
+    selectedMedia.clear();
+    selectedFeatures.clear();
+    showExternal = true;
+    showCover = false;
+    currentSort = "random";
 
+    // 2. 画面上の入力欄をクリア
+    input.value = "";
+
+    // 3. すべてのトグルボタンの「active」クラスを一度消す
+    document.querySelectorAll(".toggle").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    // 4. 「外部コラボを含める」だけ初期状態(active)に戻す
+    const optBtns = document.querySelectorAll("#optionButtons .toggle");
+    optBtns.forEach(btn => {
+        if (btn.textContent.includes("外部")) {
+            btn.classList.add("active");
+        }
+    });
+
+    // 5. 結果表示エリアとソートボタンのリセット
+    cardsContainer.innerHTML = "";
+    document.querySelectorAll(".sortBtn").forEach(b => {
+        b.classList.toggle("active", b.dataset.sort === "random");
+    });
+    
+    // 6. 印象関連度ボタンの無効化状態を更新
+    updateRelevanceButton();
+
+    // 7. 重要：UI更新（ここでサイトカラーがデフォルトに戻り、カウントも0になります）
+    updateUI(); 
+};
 input.addEventListener('focus', () => renderSuggestions(input.value));
 input.addEventListener('input', () => renderSuggestions(input.value));
 document.addEventListener('click', (e) => { if (!e.target.closest('.search-container')) suggContainer.style.display = 'none'; });
