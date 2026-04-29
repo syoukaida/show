@@ -348,7 +348,22 @@ h2:has(+ #specialUnitButtons) .hint-text {
   border-color: var(--c-main-dark);
   color: var(--c-main-dark);
 }
+.option-group {
+    margin-top: 15px;
+    border-top: 1px dashed #ccc; /* 破線で区切り */
+    padding-top: 10px;           /* 上の余白 */
+    display: flex;               /* ボタンを横並びにする場合 */
+    flex-wrap: wrap;             /* 折り返し許可 */
+    gap: 8px;                    /* ボタン同士の間隔 */
+}
 
+/* もしスマホ等で見た目を調整したい場合 */
+@media (max-width: 600px) {
+    .option-group {
+        margin-top: 10px;
+        padding-top: 8px;
+    }
+}
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, max-content);
