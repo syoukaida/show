@@ -22,6 +22,7 @@
   --c-text-gra:#FFFFFF;
   --c-text-sb:#FFFFFF;
   --c-main-light-shadow: rgba(0,0,0,0.2);
+  --c-main-light-bg:rgba(30, 196, 238, 0.1);
 
   --c-text-main: #030A11;
   --c-text-sub2: #616568;
@@ -42,7 +43,7 @@ body {
   font-family:sans-serif;
   color:var(--c-text-main);
   line-height: 1.7;
-  background:var(--c-bg-sub); 
+  background:var(--c-main-light-bg); 
   margin: 0;
   overflow-x: hidden;
     position: relative;
@@ -412,7 +413,7 @@ h2:has(+ #specialUnitButtons) .hint-text {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px; /* グループ間の隙間 */
-  border: 1px solid var(--c-main-light); /* 控えめな縁取り */
+  border: 1px solid var(--c-main-dark); /* 控えめな縁取り */
 }
 
 /* グループ内の見出し余白を調整 */
@@ -646,8 +647,8 @@ h2:has(+ #specialUnitButtons) .hint-text {
 }
 /* 個別カード */
 .card {
-  background: rgba(255, 255, 255, 0.7); /* 透明感の核心 */
-  border: 1px solid rgba(255, 255, 255, 0.4); /* 縁だけ少し光らせる */
+  background: rgba(255, 255, 255, 0.8); /* 透明感の核心 */
+  border: 1px solid rgba(255, 255, 255, 0.6); /* 縁だけ少し光らせる */
   backdrop-filter: none; /* 挙動重視のため、ここではあえてボカさない */
   color: var(--c-text-main);
   padding:16px; 
