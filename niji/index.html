@@ -55,7 +55,7 @@
 
     <div class="filter-group"> 
         <h2>曲の印象 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<br>・「曲の印象」選択時は関連度順で表示</span></span></h2>
-      <p class="deka">！！！！未実装！！！！</p>
+      <p class="tiisaku">！！！！未実装！！！！</p>
       <P class="tiisaku">現在は甲斐田ソロ・VΔLZ・ろふまお曲のみ設定済（「紹介だ！」をそのまま移植）</P>
       <P class="tiisaku">曲数をある程度増やせたら、印象値の設定に取り掛かる予定です。</P>
       <p class="tiisaku">もしよければ、あなたの好きな曲について、こちらの<a href="https://docs.google.com/forms/d/e/1FAIpQLSe1PBOFeYo3dbdkWf5i9x0wyB-UlqB4HULnyMOSVnzcMkPlZw/viewform?usp=header" class="ext-link" target="_blank" rel="noopener noreferrer">フォーム</a>で「どんな印象の曲か」を教えてください！！</p>
@@ -108,7 +108,7 @@
 
 <script>
 // --- 設定 ---
-const LIVER_CSV_URL = "liver0429.csv";
+const LIVER_CSV_URL = "liver0501.csv";
 const SONG_CSV_URL  = "song0429.csv";
 
 // --- 状態管理 ---
@@ -162,10 +162,14 @@ async function initialize() {
     // CSVのカラム名と変数を紐付け
     lColorL: row["淡いライバーカラー"] || "#f0f0f0",
     lColorD: row["濃いライバーカラー"] || "#2b5797",
-    lColorS: row["超濃いライバーカラー"] || "#2b5797",     
-    sColorL: row["淡いサブカラー"] || "#e0e0e0",
-    sColorD: row["濃いサブカラー"] || "#666666",
+    lColorS: row["超濃いライバーカラー"] || "#2b5797", 
+    lColorG: row["グラデライバーカラー"] || "#2b5797",
+    lColorW: row["枠ライバーカラー"] || "#2b5797",
+    sColorL: row["はてなサブカラー"] || "#e0e0e0",
+    sColorP: row["プルダウンサブカラー"] || "#e0e0e0",     
+    sColorD: row["線サブカラー"] || "#666666",
     lText: row["ライバー文字色"] || "#ffffff",
+    gText: row["グラデ文字色"] || "#ffffff",
     sText: row["サブ文字色"] || "#ffffff"
 }));
 
@@ -394,9 +398,13 @@ function updateUI() {
             root.style.setProperty('--c-main-light', d.lColorL);
             root.style.setProperty('--c-main-dark', d.lColorD);
           root.style.setProperty('--c-main-darker', d.lColorS);
-            root.style.setProperty('--c-sub-light', d.sColorL);
-            root.style.setProperty('--c-sub-dark', d.sColorD);
+          root.style.setProperty('--c-main-gra', d.lColorG);
+          root.style.setProperty('--c-main-waku', d.lColorW);
+            root.style.setProperty('--c-sub-hatena', d.sColorL);
+          root.style.setProperty('--c-sub-pd', d.sColorP);
+            root.style.setProperty('--c-sub-line', d.sColorD);
             root.style.setProperty('--c-text-liver', d.lText);
+          root.style.setProperty('--c-text-gra', d.gText);
             root.style.setProperty('--c-text-sb', d.sText);
             
             // ★影用の変数（ここで初めて計算してセットする）
@@ -411,10 +419,14 @@ function updateUI() {
         root.style.removeProperty('--c-main-light');
         root.style.removeProperty('--c-main-dark');
       root.style.removeProperty('--c-main-darker');
-        root.style.removeProperty('--c-sub-light');
-        root.style.removeProperty('--c-sub-dark');
+      root.style.removeProperty('--c-main-gra');
+      root.style.removeProperty('--c-main-waku');
+        root.style.removeProperty('--c-sub-hatena');
+        root.style.removeProperty('--c-sub-pd');
+      root.style.removeProperty('--c-sub-line');
         root.style.removeProperty('--c-text-liver');
         root.style.removeProperty('--c-text-sb');
+      root.style.removeProperty('--c-text-gra');
         root.style.removeProperty('--c-main-light-shadow'); // 影も忘れず削除
         if (showBtn) {
         showBtn.innerHTML = `結果を表示<span class="showBtn-hint"></span>`;
