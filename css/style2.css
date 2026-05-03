@@ -524,7 +524,7 @@ h2:has(+ #specialUnitButtons) .hint-text {
   width: 100%;
   z-index: 2000;
   /* 背景を透かす（rgbaの最後の0.9が透明度です） */
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px)saturate(160%); /* 後ろをぼかす */
   -webkit-backdrop-filter: blur(15px) saturate(160%); /* Safari対応 */
   border-top: 2px solid var(--c-sub-line);
@@ -549,6 +549,27 @@ h2:has(+ #specialUnitButtons) .hint-text {
   #countTop { font-size: 14px; }
   .count-num { font-size: 20px; }
   #showBtn { padding: 10px 18px; font-size: 16px; }
+}  
+
+@media (max-width: 768px) {
+  #showBtn {
+    padding: 8px 16px;   /* 上下を 10px → 6px に縮小 */
+    font-size: 14px;      /* 文字も少しだけ小さくしてバランス調整 */
+  }
+  /* 撤回だ！ボタンの縦幅をスリムにする */
+  #resetBtn {
+    padding: 4px 12px;   /* 上下を 8px → 4px に縮小 */
+    font-size: 11px;
+  }
+  /* ボタンを包むグループの余白も微調整 */
+  .button-group {
+    margin-bottom: 0;
+  }
+   .main {
+    padding-bottom: 180px !important;
+  }
+  #countTop { font-size: 14px; }
+  .count-num { font-size: 20px; }
 }   
 /* =========================================
       ソート
@@ -842,7 +863,13 @@ h2:has(+ #specialUnitButtons) .hint-text {
   font-size: 9px;   /* サイズを大きくする */
 }
 .deka{
-  color:var(--c-main-dark);        /* 文字を赤にする */
-  font-size: 25px;   /* サイズを大きくする */
+  color:var(--c-main-dark);
+  font-weight:bold;
+  font-size: 12px;   /* サイズを大きくする */
   marzin:none;
 }
+.remarks-start {
+    margin-top: 0.5em; /* 1行分の余白 */
+}
+.in-link{
+  color:var(--c-main-dark);}
