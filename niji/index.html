@@ -107,8 +107,8 @@
 
 <script>
 // --- 設定 ---
-const LIVER_CSV_URL = "liver0503.csv";
-const SONG_CSV_URL  = "song0503.csv";
+const LIVER_CSV_URL = "liver0508.csv";
+const SONG_CSV_URL  = "song0508.csv";
 
 // --- 状態管理 ---
 let liverMaster = [];
@@ -162,6 +162,7 @@ async function initialize() {
     name: row["名前"] ? row["名前"].trim() : "", 
     kana: row["読み"] ? row["読み"].trim() : "",
          fullKana: row["完全読み"] ? row["完全読み"].trim() : "",
+         unitKana: row["ユニット読み"] ? row["ユニット読み"].trim() : "",
          VtL: row["VtL"] || "",
          isGraduated: row["卒業"] === "TRUE",
     // CSVのカラム名と変数を紐付け
@@ -346,7 +347,10 @@ function renderSuggestions(filterText = "") {
         const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
         const fullKanaKeywords = (l.fullKana || "").toLowerCase().split(/\s+/);
 const fullKanaMatch = fullKanaKeywords.some(keyword => keyword === val);
-        return nameMatch || kanaMatch|| fullKanaMatch;
+      const unitKeywords = (l.unitKana || "").toLowerCase().split(/\s+/);
+    const unitMatch = unitKeywords.some(keyword => keyword === val);
+      
+        return nameMatch || kanaMatch|| fullKanaMatch|| unitMatch;
     });
 
     suggContainer.innerHTML = '';
@@ -564,13 +568,17 @@ document.getElementById("showBtn").onclick = () => {
         card.className = "card";
         const thumbUrl = r["サムネ用リンク"] ? `https://img.youtube.com/vi/${r["サムネ用リンク"].match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)?.[1]}/hqdefault.jpg` : "";
         
+      const fullSingers = r["ユニット"] ? `${r["ユニット"]}（${r["歌唱"]}）` : r["歌唱"];
+        const isLong = fullSingers.length > 110;
+        const shortSingers = isLong ? fullSingers.substring(0, 110) + "..." : fullSingers;
+      
         card.innerHTML = `
             ${thumbUrl ? `<a href="${r["サムネ用リンク"]}" target="_blank"><div class="thumb"><img src="${thumbUrl}"></div></a>` : ""}
             <div class="title">${r["曲名"]}</div>
             <div class="meta">
-                <div>
-            歌唱：${r["ユニット"] ? `${r["ユニット"]}（${r["歌唱"]}）` : r["歌唱"]}
-        </div>
+                <div class="singers-area" 
+                ${isLong ? `onclick="const isOpen = this.innerText.includes('${fullSingers}'); this.innerText = isOpen ? '歌唱：${shortSingers}' : '歌唱：${fullSingers}';"` : ""}>
+                    歌唱：${shortSingers}</div>
                 ${r["歌唱2"] ? `<div>${r["歌唱2"]}</div>` : ""}
                 ${r["歌唱3"] ? `<div>${r["歌唱3"]}</div>` : ""}
 
