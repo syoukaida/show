@@ -691,10 +691,18 @@ h2:has(+ #specialUnitButtons) .hint-text {
 }
 /* 曲名 */
 .title { 
-  font-size:16px; 
-  font-weight:bold; 
-  margin-bottom:6px; 
+  font-size: 16px; 
+    font-weight: bold; 
+    margin-bottom: 8px;
+    text-decoration: underline;
+    /* サイトのメインカラーを線の色にする */
+    text-decoration-color: var(--c-sub-pd); 
+    /* 線の太さを少し太くして存在感を出す */
+    text-decoration-thickness: 2px;
+    /* 文字との間隔を空けてスッキリ見せる */
+    text-underline-offset: 2px;
 }
+
 /* メタ情報（歌唱、作詞、作曲など） */
 .meta { 
   font-size:13px; 
@@ -745,7 +753,7 @@ h2:has(+ #specialUnitButtons) .hint-text {
   .title { 
     font-size: 14px; /* 曲名を少し小さく */
     line-height: 1.3;
-    margin-bottom: 4px;
+    margin-bottom: 8px;    
   }
   .meta { 
     font-size: 12px; /* 歌唱・作詞などを小さく */
@@ -770,7 +778,16 @@ h2:has(+ #specialUnitButtons) .hint-text {
   }
   .card {padding:8px;  border-radius: 12px; }
   #cards {gap:10px;}
-}    
+} 
+
+.singers-area {
+    font-weight: bold;
+}
+
+/* 50文字以上でクリック可能な場合のみポインターを表示 */
+.singers-area[onclick] {
+    cursor: pointer;
+}
 
         .search-container { position: relative; margin-bottom: 20px; }
         .tags-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 32px; }
