@@ -39,15 +39,23 @@
 </p> 
 
   <div class="filter-group"> 
-    <h2>ライバーを選択 <span class="hint">? <span class="hint-text">・複数選択可（AND検索）<BR>・愛称でも検索可</span></span></h2>
-    <p class="tiisaku">・読みの検索、各ライバーの色味は一部未完成です。順次整えます（視認性の問題等あれば教えてほしいです）<BR>・名前とその読みだけでなく「委員長」等の愛称・通称でも検索できるようにしたいと思っています。追加すべき呼称があれば<a href="https://t.co/gR2vWFgzhb" class="ext-link" target="_blank" rel="noopener noreferrer">マシュマロ</a>へお願いします<BR></P>
+    <h2>ライバーを選択 <span class="hint">? <span class="hint-text">・愛称や職業、ユニット名でも検索可<BR>・例：「葛葉」「叶」を選択時<Br>「選んだ全員」の場合、ChroNoiRもゲマズもVACHSSも表示対象<BR>「このメンバーのみ」の場合、ChroNoiRのみ表示対象<BR>「いずれか」の場合、ユニット曲に加え葛葉ソロや叶ソロも表示対象<BR></span></span></h2>
         <div class="search-container">
             <div id="selected-tags" class="tags-area"></div>
-            <input type="text" id="liver-input" placeholder="ライバー名を選択・入力..." autocomplete="off">
+            <input type="text" name="q_search_random_99" id="l-search-box" placeholder="ライバー名を選択・入力..." 
+       autocomplete="one-time-code" 
+       autocorrect="off" 
+       autocapitalize="off" 
+       spellcheck="false">
             <div id="suggestions" class="suggestions"></div>
         </div>
   <div class="unit-mini">
   <button id="liverClearAll">ライバー選択を全解除</button>
+</div>
+    <div class="search-mode-selector">
+    <button type="button" class="mode-btn active" data-mode="and" onclick="setSearchMode('and')">選んだ全員を含む</button>
+    <button type="button" class="mode-btn" data-mode="exact" onclick="setSearchMode('exact')">このメンバーのみ</button>
+    <button type="button" class="mode-btn" data-mode="or" onclick="setSearchMode('or')">いずれかを含む</button>
 </div>
         <div id="result-info">データを読み込み中...</div>
     </div> 
@@ -107,8 +115,8 @@
 
 <script>
 // --- 設定 ---
-const LIVER_CSV_URL = "liver0508.csv";
-const SONG_CSV_URL  = "song0508.csv";
+const LIVER_CSV_URL = "liver0509.csv";
+const SONG_CSV_URL  = "song0509.csv";
 
 // --- 状態管理 ---
 let liverMaster = [];
@@ -120,8 +128,9 @@ let showCover = false;    // 「箱内カバー」を表示するか
 let selectedMedia = new Set(); 
 let selectedFeatures = new Set();
 let currentSort = "random";
+let searchMode = 'and';
 
-const input = document.getElementById('liver-input');
+const input = document.getElementById('l-search-box');
 const suggContainer = document.getElementById('suggestions');
 const tagsArea = document.getElementById('selected-tags');
 const resultInfo = document.getElementById('result-info');
@@ -145,7 +154,7 @@ const displayOptions = [
   
 // --- 初期化 ---
 async function initialize() {
-  const input = document.getElementById('liver-input');
+  const input = document.getElementById('l-search-box');
     const resultInfo = document.getElementById('result-info');
 
     input.placeholder = "データを読み込み中...";
@@ -462,6 +471,16 @@ function addLiver(name) {
         // input.blur();
     }
 }
+
+function setSearchMode(mode) {
+    searchMode = mode;
+    // ボタンの見た目を更新
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    // カウントをリアルタイムで更新
+    updateCount();
+}
 // --- ボタン生成 ---
 function createButtons(list, containerId, selectedSet) {
     const container = document.getElementById(containerId);
@@ -496,8 +515,19 @@ function filterSongs() {
         // ライバー絞り込み
         if (selectedLivers.length > 0) {
             const singers = song["歌唱"] ? song["歌唱"].split(/[、,]+/).map(s => s.trim()) : [];
-            const matchAll = selectedLivers.every(sel => singers.includes(sel));
-            if (!matchAll) return false;
+            const isPresent = (sel) => singers.includes(sel);
+            const matchAll = selectedLivers.every(isPresent); // 選択した人が全員いる
+            const matchAny = selectedLivers.some(isPresent);  // 選択した人のうち誰か一人がいる
+            const isExact  = singers.length === selectedLivers.length && matchAll; // 人数もメンバーも一致
+
+            if (searchMode === 'exact') {
+                if (!isExact) return false;
+            } else if (searchMode === 'or') {
+                if (!matchAny) return false;
+            } else {
+                // デフォルト：and検索
+                if (!matchAll) return false;
+            }
         }
       
       const isExternal = song["外部"] === "TRUE";
@@ -593,7 +623,8 @@ document.getElementById("showBtn").onclick = () => {
             <div class="links">
                 ${r["MVリンク"] ? `<a href="${r["MVリンク"]}" target="_blank">${r["箱内カバー"] === "TRUE" ? "カバー動画" : "公式MV"}</a>` : ""}
                 ${r["3Dリンク"] ? `<a href="${r["3Dリンク"]}" target="_blank">3D動画</a>` : ""}
-                ${r["3Dリンク2"] ? `<a href="${r["3Dリンク"]}" target="_blank">3D動画</a>` : ""}
+                ${r["3Dリンク2"] ? `<a href="${r["3Dリンク2"]}" target="_blank">3D動画</a>` : ""}
+                ${r["フル尺リンク"] ? `<a href="${r["フル尺リンク"]}" target="_blank">FULL</a>` : ""}
                 ${r["振付リンク"] ? `<a href="${r["振付リンク"]}" target="_blank">振付動画</a>` : ""}
                  ${r["振付リンク2"] ? `<a href="${r["振付リンク2"]}" target="_blank">振付動画</a>` : ""}
                 ${r["サブスクリンク"] ? `<a href="${r["サブスクリンク"]}" target="_blank">サブスク</a>` : ""}
