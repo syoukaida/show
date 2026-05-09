@@ -316,6 +316,10 @@ h2:has(+ #specialUnitButtons) .hint-text {
   transform: translateY(1px);
   box-shadow: inset 0 2px 4px var(--c-main-light-shadow);
 }
+
+#optionButtons.option-group .toggle.active{
+background:var(--c-main-darker);border-color: var(--c-main-darker);color:#FFF;}
+
 /* --- 5. フィルターボタン・グリッド内に追加 --- */
 
 /* 活動形態ボタンのグループ設定 */
@@ -894,25 +898,38 @@ h2:has(+ #specialUnitButtons) .hint-text {
 .search-mode-selector {
     display: flex;
     gap: 5px;
-  margin-top: 12px;
+  margin-top: 10px;
     margin-bottom: 2px;
   justify-content: flex-start;
+  border-top: 1px dashed #ccc;
 }
 
 .mode-btn {
-    flex: none; 
-    width: 120px;
   　flex: 1;
-    padding: 4px;
-    font-size: 0.8rem;
     border: 1px solid var(--c-main-darker);
-    background: #fff;
-    color: var(--c-main-darker);
+    background: rgba(255, 255, 255, 0.9);
     cursor: pointer;
-    border-radius: 4px;
+  margin-top: 10px;
+  border: 1px solid #d1dce0; /* 基本は控えめな色 */
+  border-radius: 12px; /*丸くする */
+  box-shadow:none; /* 重い影は消す */
+  color: var(--c-text-sub);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0 12px;/*内側の余白 上下  左右*/
+  line-height: 30px;/*行の高さ（縦のサイズ）*/
+  transition: all 0.2s ease;/*変化をなめらかに*/
+
 }
 
 .mode-btn.active {
     background: var(--c-main-darker);
     color:#FFF; /* ライバー文字色に連動 */
+  border-color: var(--c-main-darker);
+}
+@media (max-width: 768px) {
+.mode-btn {  font-size: 10px;
+}
+  @media (max-width: 450px) {
+.mode-btn {  font-size: 9px;
 }
