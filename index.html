@@ -83,7 +83,6 @@
     ?
     <span class="hint-text">
       ・複数選択可（OR検索）<br>
-      ・どの項目も選択していない時にはオリジナル曲のみ表示<BR>
     </span></h2>
   
   
@@ -98,8 +97,30 @@
    <div class="unit-mini">
   <button id="unitSelectAll">全選択</button>
   <button id="unitClearAll">全解除</button>
+     <button id="unitSelectOriginal">オリジナル曲のみ選択</button>
+  <button id="unitSelectCover">歌ってみたのみ選択</button>
 </div>
 </div>
+<div class="filter-group">
+<h2>楽曲情報 <span class="hint">
+    ?
+    <span class="hint-text">
+      ・複数選択可（AND検索）<br>
+      ・「歌ってみた」には「3D映像」「ミリオン達成」「ライブ披露済み/未披露」のみ適用<br>
+      ・「ミリオン達成」はMVだけでなく3D動画、Youtube Music等の再生数の合計が100万回以上のもの
+    </span></h2>
+<div id="mediaButtons" class="group"></div>
+</div>
+  
+<div id="toggle-filters-btn" class="toggle-filters-btn">
+  <div class="btn-content">
+    <img src="images/mizuirokamon.png" alt="icon" class="btn-icon">
+    他の条件でも探す <span>▼</span>
+  </div>
+</div>
+
+<div id="advanced-filters" class="advanced-filters" style="display: none;">  
+  
   <div class="filter-group">
 <h2>
   曲の速さ
@@ -117,15 +138,32 @@
 </h2>
 <div id="bpmButtons" class="group"></div>  
 </div>
-    <div class="filter-group">
-<h2>楽曲情報 <span class="hint">
+    
+
+<div class="filter-group">
+  <h2>公開日で検索 <span class="hint">
     ?
     <span class="hint-text">
-      ・複数選択可（AND検索）<br>
-      ・「歌ってみた」には「3D映像」「ライブ披露済み/未披露」のみ適用
+      ・指定した期間内に公開された楽曲を絞り込みます<br>
+      ・片方のみの入力でも検索可能です（例：開始日のみ＝その日以降すべて）
     </span></h2>
-<div id="mediaButtons" class="group"></div>
+  <div class="date-search-group" style="display: flex; gap: 10px; align-items: center;">
+    <input type="date" id="dateStart" class="search-box" style="flex: 1;">
+    <span>〜</span>
+    <input type="date" id="dateEnd" class="search-box" style="flex: 1;">
+  </div>
+</div>      
+      
+      <div class="filter-group">
+  <h2>曲名検索 <span class="hint">
+    ?
+    <span class="hint-text">
+      ・表記揺れには非対応<br>
+      ・曲名の一部の入力で部分一致検索が可能
+    </span></h2>
+  <input type="text" id="titleSearch" class="search-box" placeholder="曲名を入力">
 </div>
+      
       <div class="filter-group">
   <h2>クリエイター名検索 <span class="hint">
     ?
@@ -136,7 +174,9 @@
     </span></h2>
   <input type="text" id="creatorSearch" class="search-box" placeholder="名前を入力">
 </div>
-      
+</div>
+        
+        
 <div class="footer-controls">
   <div class="controls-inner">
     <div id="countTop">
@@ -154,8 +194,9 @@
  </div>   
  
 <div class="sort-group">
-  <button class="sortBtn active" data-sort="random">ランダム</button>
-  <button class="sortBtn" data-sort="date">公開日順</button>
+  <button class="sortBtn" data-sort="random">ランダム</button>
+  <button class="sortBtn active" data-sort="date-new">公開日が新しい順</button>
+  <button class="sortBtn" data-sort="date-old">公開日が古い順</button>
   <button class="sortBtn" data-sort="views">再生数順</button>
   <button class="sortBtn" data-sort="relevance">印象関連度順</button>
 </div>  
@@ -186,7 +227,7 @@ const pcImages = [
   document.getElementById("hero-pc").src = pcRandom;
   
 // ===== CSV読み込み（カンマ入り対応） =====
-let currentSort = "random";  
+let currentSort = "date-new";  
   
   
 function parseCSV(text){
@@ -221,6 +262,9 @@ const selectedMedia = new Set(); // 映像・ライブ統合
 const selectedBPM = new Set();
 const selectedFeatures = new Set();
 let searchKeyword = "";
+let searchTitleKeyword = "";
+let searchDateStart = ""; // ★ここを追加
+let searchDateEnd = "";   // ★ここを追加
 // ===== 定義 =====
 const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
 // 「選択されないと表示されない」特別ユニット
@@ -232,6 +276,7 @@ const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌
 const getFeatureButtons = () =>
   Array.from(document.querySelectorAll("#featureGrid .toggle"));
   
+// 1. 全選択
 document.getElementById("unitSelectAll").onclick = () => {
   unitButtons().forEach(btn => {
     const name = btn.textContent;
@@ -241,6 +286,7 @@ document.getElementById("unitSelectAll").onclick = () => {
   updateCount();
 };
 
+// 2. 全解除
 document.getElementById("unitClearAll").onclick = () => {
   unitButtons().forEach(btn => {
     const name = btn.textContent;
@@ -249,6 +295,38 @@ document.getElementById("unitClearAll").onclick = () => {
   });
   updateCount();
 }; 
+
+// 3. オリジナル曲のみ選択
+document.getElementById("unitSelectOriginal").onclick = () => {
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    if (!specialUnits.includes(name)) {
+      // 歌ってみた（specialUnits）以外をアクティブにする
+      selectedUnits.add(name);
+      btn.classList.add("active");
+    } else {
+      selectedUnits.delete(name);
+      btn.classList.remove("active");
+    }
+  });
+  updateCount();
+};
+
+// 4. 歌ってみたのみ選択
+document.getElementById("unitSelectCover").onclick = () => {
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    if (specialUnits.includes(name)) {
+      // 歌ってみた（specialUnits）だけをアクティブにする
+      selectedUnits.add(name);
+      btn.classList.add("active");
+    } else {
+      selectedUnits.delete(name);
+      btn.classList.remove("active");
+    }
+  });
+  updateCount();
+};
 // 2. 「ランダムに3つ」ボタン（querySelectorAllをgetFeatureButtonsに置き換え）
 document.getElementById("featureRandom3").onclick = () => {
   const btns = getFeatureButtons(); // ここを統一
@@ -281,7 +359,7 @@ document.getElementById("featureClearAll").onclick = () => {
 };
 // mediaとライブを統合して順番通りに配置（2行に折り返される）
 const mediaTags = [
-  "MV公開","3D映像公開","本人の作詞/作曲",
+  "MV公開","3D映像公開","本人の作詞/作曲","ミリオン達成",
   "有観客ライブ披露済み","有観客ライブ未披露","独特なコーレス"
 ];
 const bpmTags = ["ゆっくり","中くらい","速い","かなり速い"];
@@ -374,7 +452,19 @@ document.addEventListener('click', function() {
   hints.forEach(h => h.classList.remove('active'));
 });  
 
-
+// ★【追加】アコーディオン（開閉）用のクリックイベント
+document.getElementById("toggle-filters-btn").onclick = function() {
+  const advFilters = document.getElementById("advanced-filters");
+  const arrow = this.querySelector("span");
+  
+  if (advFilters.style.display === "none") {
+    advFilters.style.display = "block";
+    arrow.textContent = "▲"; // 開いている時は上向き矢印
+  } else {
+    advFilters.style.display = "none";
+    arrow.textContent = "▼"; // 閉じている時は下向き矢印
+  }
+};
    
 // ===== CSV URL =====
 const CSV_URL = "data0616.csv";
@@ -409,9 +499,30 @@ document.getElementById('creatorSearch').addEventListener('input', (e) => {
     searchKeyword = e.target.value.trim(); // 空白を除去して保存
     updateCount(); // ヒット件数を更新
 });  
+
+document.getElementById('titleSearch').addEventListener('input', (e) => {
+    searchTitleKeyword = e.target.value.trim(); // 空白を除去して保存
+    updateCount(); // ヒット件数を更新
+});
+  
+document.getElementById('dateStart').addEventListener('change', (e) => {
+    searchDateStart = e.target.value; // YYYY-MM-DD 形式で取得されます
+    updateCount();
+});
+
+// ★ここを追加（公開日・終了日の変更検知）
+document.getElementById('dateEnd').addEventListener('change', (e) => {
+    searchDateEnd = e.target.value; // YYYY-MM-DD 形式で取得されます
+    updateCount();
+});
 // ===== CSV読み込み =====
 fetch(CSV_URL).then(res=>res.text()).then(text=>{
   allSongs=parseCSV(text);
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedUnits.add(name);
+    btn.classList.add("active");
+  });
   updateCount();
   updateRelevanceButton();
 });
@@ -447,7 +558,7 @@ function updateRelevanceButton(){
 
     // もし関連度が選ばれていたらランダムへ戻す
     if(currentSort === "relevance"){
-      currentSort = "random";
+      currentSort = "date-new";
       document.querySelectorAll(".sortBtn").forEach(b=>b.classList.remove("active"));
       document.querySelector('.sortBtn[data-sort="random"]').classList.add("active");
     }
@@ -461,20 +572,19 @@ function updateCount(){
   if(!allSongs.length) return;
   let results = allSongs.filter(song=>{
     const unit = song["ユニット"].trim();
-    if(!unit) return false;  // 空欄は非表示
-    if(specialUnits.includes(unit)){
-        if(!selectedUnits.has(unit)) return false;
-    } else {
-        if(selectedUnits.size > 0 && !selectedUnits.has(unit)) return false;
-    }
+    if (!selectedUnits.has(unit)) return false;
 
     for(let t of selectedMedia){
-  if(t === "有観客ライブ未披露") {
-    if(song["有観客ライブ披露済み"] !== "FALSE") return false;
-  } else {
-    if(song[t] !== "TRUE") return false;
-  }
-}
+      if(t === "有観客ライブ未披露") {
+        if(song["有観客ライブ披露済み"] !== "FALSE") return false;
+      } else if(t === "ミリオン達成") {
+        // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
+        const viewsCount = parseInt(song["再生数"]) || 0;
+        if(viewsCount <= 100) return false; 
+      } else {
+        if(song[t] !== "TRUE") return false;
+      }
+    }
     for(let t of selectedBPM){
       const bpm = parseInt(song["BPM"])||0;
       let label="";
@@ -494,7 +604,29 @@ function updateCount(){
         const arranger = (song["編曲"] || "").toLowerCase();
         if (!(lyricist.includes(k) || composer.includes(k) || arranger.includes(k))) return false;
     }
-    
+   if (searchTitleKeyword !== "") {
+        const titleText = (song["曲名"] || "").toLowerCase();
+        if (!titleText.includes(searchTitleKeyword.toLowerCase())) return false;
+    }
+ // ★公開日（期間）検索の条件（ここを追加）
+    if (song["公開日"]) {
+        const songDate = new Date(song["公開日"]);
+        
+        // 開始日が設定されていて、曲の公開日がそれより前なら除外
+        if (searchDateStart !== "") {
+            const startDate = new Date(searchDateStart);
+            if (songDate < startDate) return false;
+        }
+        
+        // 終了日が設定されていて、曲の公開日がそれより後なら除外
+        if (searchDateEnd !== "") {
+            const endDate = new Date(searchDateEnd);
+            if (songDate > endDate) return false;
+        }
+    } else if (searchDateStart !== "" || searchDateEnd !== "") {
+        // 日付条件が入っているのに、曲の公開日データが空の場合は除外
+        return false;
+    }   
     return true;
   });
   
@@ -528,22 +660,21 @@ document.getElementById("showBtn").onclick = (e)=>{
   container.innerHTML="";
   let results = allSongs.filter(song=>{
    const unit = song["ユニット"].trim();
-    if(!unit) return false;  // 空欄は非表示
-if(specialUnits.includes(unit)){
-    if(!selectedUnits.has(unit)) return false;
-} else {
-    if(selectedUnits.size > 0 && !selectedUnits.has(unit)) return false;
-}
+    if (!selectedUnits.has(unit)) return false;
 
 
 
-    for(let t of selectedMedia){
-  if(t === "有観客ライブ未披露") {
-    if(song["有観客ライブ披露済み"] !== "FALSE") return false;
-  } else {
-    if(song[t] !== "TRUE") return false;
-  }
-}
+   for(let t of selectedMedia){
+      if(t === "有観客ライブ未披露") {
+        if(song["有観客ライブ披露済み"] !== "FALSE") return false;
+      } else if(t === "ミリオン達成") {
+        // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
+        const viewsCount = parseInt(song["再生数"]) || 0;
+        if(viewsCount <= 100) return false; 
+      } else {
+        if(song[t] !== "TRUE") return false;
+      }
+    }
     
     for(let t of selectedBPM){
       const bpm=parseInt(song["BPM"])||0;
@@ -564,14 +695,32 @@ if(specialUnits.includes(unit)){
         const arranger = (song["編曲"] || "").toLowerCase();
         if (!(lyricist.includes(k) || composer.includes(k) || arranger.includes(k))) return false;
     }
+    // ★曲名検索の条件（ここを追加）
+    if (searchTitleKeyword !== "") {
+        const titleText = (song["曲名"] || "").toLowerCase();
+        if (!titleText.includes(searchTitleKeyword.toLowerCase())) return false;
+    }
     
+    if (song["公開日"]) {
+        const songDate = new Date(song["公開日"]);
+        if (searchDateStart !== "") {
+            const startDate = new Date(searchDateStart);
+            if (songDate < startDate) return false;
+        }
+        if (searchDateEnd !== "") {
+            const endDate = new Date(searchDateEnd);
+            if (songDate > endDate) return false;
+        }
+    } else if (searchDateStart !== "" || searchDateEnd !== "") {
+        return false;
+    }
     return true;
   });
   // 曲調でソート（未選択ならランダム表示）
 // ★ 紹介だ！ボタンから直接押されたときだけ初期化
 if(e?.isTrusted){
   if(selectedFeatures.size === 0){
-    currentSort = "random";
+    currentSort = "date-new";
   } else {
     currentSort = "relevance";
   }
@@ -589,9 +738,16 @@ if(currentSort === "random"){
   results.sort(()=>Math.random()-0.5);
 }
 
-if(currentSort === "date"){
+if(currentSort === "date-new"){
   results.sort((a,b)=>{
     return new Date(b["公開日"]) - new Date(a["公開日"]);
+  });
+}
+
+// ★ここを追加（公開日が古い順：昇順）
+if(currentSort === "date-old"){
+  results.sort((a,b)=>{
+    return new Date(a["公開日"]) - new Date(b["公開日"]);
   });
 }
 
@@ -769,17 +925,34 @@ document.getElementById("resetBtn").onclick=()=>{
   selectedMedia.clear();
   selectedBPM.clear();
   selectedFeatures.clear();
+  searchDateStart = ""; // ★ここを追加
+  searchDateEnd = "";   // ★ここを追加
   
   searchKeyword = ""; 
+  searchTitleKeyword = "";
+  
   const searchInput = document.getElementById('creatorSearch');
   if(searchInput) searchInput.value = "";
+  
+  const titleInput = document.getElementById('titleSearch'); // ★ここを追加
+  if(titleInput) titleInput.value = ""; //
+  
+  const dateStartInput = document.getElementById('dateStart');
+  if(dateStartInput) dateStartInput.value = "";
+  const dateEndInput = document.getElementById('dateEnd');
+  if(dateEndInput) dateEndInput.value = "";
 
   document.querySelectorAll(".toggle")
     .forEach(b=>b.classList.remove("active"));
+  unitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedUnits.add(name);
+    btn.classList.add("active");
+  });
 
   document.getElementById("cards").innerHTML="";
 
-  currentSort = "random";  // ← 追加
+  currentSort = "date-new";  // ← 追加
 
   document.querySelectorAll(".sortBtn")
     .forEach(b=>b.classList.remove("active"));
