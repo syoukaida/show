@@ -327,16 +327,6 @@ h2:has(+ #specialUnitButtons) .hint-text {
   padding: 3px 8px;   /* ボタンの縦・横の余白を小さく */
   line-height: 20px;/*行の高さ（縦のサイズ）*/
 }
-/* 「歌ってみた」行の左側に注釈を追加 */
-#specialUnitButtons::before {
-  content: "※追加表示";
-  font-size: 10px;           /* 小さく */
-  color: var(--c-text-sub); /* 控えめな色 */
-  opacity: 0.8;             /* 少し透かす */
-  margin-right: 4px;        /* ボタンとの間隔 */
-  align-self: center;       /* 縦位置を中央に */
-  white-space: nowrap;      /* 改行させない */
-}
 
 /* スマホ版でさらに小さくする場合 */
 @media (max-width: 768px) {
@@ -392,7 +382,7 @@ h2:has(+ #specialUnitButtons) .hint-text {
 }
 @media (max-width: 450px) {
   .toggle { font-size: 8px; }
-  .unit-mini button{ font-size: 9px; }
+  .unit-mini button{ font-size: 8px; }
   #specialUnitButtons .toggle {font-size: 8px;}
 
   #unitButtons .toggle,
