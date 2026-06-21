@@ -1207,18 +1207,7 @@ color:var(--c-text-main);
         border: 1px solid #d1dce0;
         user-select: none;
       }
-.toggle-filters-btn .btn-content {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* アイコンと文字の間の隙間 */
-}
 
-/* ★追加：アイコン画像自体のサイズ調整 */
-.toggle-filters-btn .btn-icon {
-  width: 20px;  /* ボタンの文字の大きさに合わせたサイズ（お好みで調整してください） */
-  height: 20px;
-  object-fit: contain;
-}
       .toggle-filters-btn:hover {
         background-color: var(--c-kaida-line);
       }
