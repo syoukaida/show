@@ -1193,3 +1193,36 @@ color:var(--c-text-main);
   border: 1.5px solid var(--c-kaida); /* ここで甲斐田カラーを適用 */
   box-shadow: 0 0 5px var(--c-kaida-line);
 }
+.toggle-filters-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color:rgba(255, 255, 255, 0.5);
+        padding: 12px 15px;
+        margin: 20px 0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        border: 1px solid #d1dce0;
+        user-select: none;
+      }
+.toggle-filters-btn .btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* アイコンと文字の間の隙間 */
+}
+
+/* ★追加：アイコン画像自体のサイズ調整 */
+.toggle-filters-btn .btn-icon {
+  width: 20px;  /* ボタンの文字の大きさに合わせたサイズ（お好みで調整してください） */
+  height: 20px;
+  object-fit: contain;
+}
+      .toggle-filters-btn:hover {
+        background-color: var(--c-kaida-line);
+      }
+      .advanced-filters {
+        /* アニメーションさせたい場合はここを調整 */
+        margin-bottom: 20px;
+      }
