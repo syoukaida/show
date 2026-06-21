@@ -605,25 +605,26 @@ function updateCount(){
         const titleText = (song["曲名"] || "").toLowerCase();
         if (!titleText.includes(searchTitleKeyword.toLowerCase())) return false;
     }
- // ★公開日（期間）検索の条件（ここを追加）
+// ★公開日（期間）検索の条件（当日を含める修正）
     if (song["公開日"]) {
+        // 全ての日付オブジェクトの時間を 00:00:00 に統一して比較する
         const songDate = new Date(song["公開日"]);
+        songDate.setHours(0, 0, 0, 0);
         
-        // 開始日が設定されていて、曲の公開日がそれより前なら除外
         if (searchDateStart !== "") {
             const startDate = new Date(searchDateStart);
-            if (songDate < startDate) return false;
+            startDate.setHours(0, 0, 0, 0);
+            if (songDate < startDate) return false; // 開始日当日より前なら除外
         }
         
-        // 終了日が設定されていて、曲の公開日がそれより後なら除外
         if (searchDateEnd !== "") {
             const endDate = new Date(searchDateEnd);
-            if (songDate > endDate) return false;
+            endDate.setHours(0, 0, 0, 0);
+            if (songDate > endDate) return false; // 終了日当日より後なら除外
         }
     } else if (searchDateStart !== "" || searchDateEnd !== "") {
-        // 日付条件が入っているのに、曲の公開日データが空の場合は除外
         return false;
-    }   
+    }
     return true;
   });
   
@@ -700,12 +701,16 @@ document.getElementById("showBtn").onclick = (e)=>{
     
     if (song["公開日"]) {
         const songDate = new Date(song["公開日"]);
+        songDate.setHours(0, 0, 0, 0);
+        
         if (searchDateStart !== "") {
             const startDate = new Date(searchDateStart);
+            startDate.setHours(0, 0, 0, 0);
             if (songDate < startDate) return false;
         }
         if (searchDateEnd !== "") {
             const endDate = new Date(searchDateEnd);
+            endDate.setHours(0, 0, 0, 0);
             if (songDate > endDate) return false;
         }
     } else if (searchDateStart !== "" || searchDateEnd !== "") {
