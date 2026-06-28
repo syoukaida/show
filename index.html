@@ -113,7 +113,10 @@
 </div>
   
 <div id="toggle-filters-btn" class="toggle-filters-btn">
-  さらに条件を絞り込む <span>▼</span>
+  <div class="btn-content">
+    <img src="images/mizuirokamon.png" alt="icon" class="btn-icon">
+    他の条件でも探す <span>▼</span>
+  </div>
 </div>
 
 <div id="advanced-filters" class="advanced-filters" style="display: none;">  
@@ -152,7 +155,7 @@
 </div>      
       
       <div class="filter-group">
-  <h2>曲名検索 <span class="hint">
+  <h2>曲名で検索 <span class="hint">
     ?
     <span class="hint-text">
       ・表記揺れには非対応<br>
@@ -162,7 +165,7 @@
 </div>
       
       <div class="filter-group">
-  <h2>クリエイター名検索 <span class="hint">
+  <h2>クリエイター名・原曲歌手名で検索 <span class="hint">
     ?
     <span class="hint-text">
       ・表記揺れには非対応<br>
@@ -171,6 +174,34 @@
     </span></h2>
   <input type="text" id="creatorSearch" class="search-box" placeholder="名前を入力">
 </div>
+<div class="filter-group"> 
+    <h2>一緒に歌ったライバーで検索 
+        <span class="hint">? 
+            <span class="hint-text">
+                ・愛称でも検索可<BR>
+            </span>
+        </span>
+    </h2>
+
+    <div class="search-container">
+        <div id="selected-tags" class="tags-area"></div>
+        <input type="text" name="q_search_random_99" id="l-search-box" placeholder="ライバー名を選択・入力..." 
+               autocomplete="one-time-code" 
+               autocorrect="off" 
+               autocapitalize="off" 
+               spellcheck="false">
+        <div id="suggestions" class="suggestions"></div>
+    </div>
+
+    <div class="unit-mini">
+        <button id="liverClearAll">ライバー選択を全解除</button>
+    </div>
+  <div class="search-mode-selector">
+        <button type="button" class="mode-btn active" data-mode="and" onclick="setSearchMode('and')">選んだ全員を含む</button>
+        <button type="button" class="mode-btn" data-mode="exact" onclick="setSearchMode('exact')">このメンバーのみ</button>
+        <button type="button" class="mode-btn" data-mode="or" onclick="setSearchMode('or')">いずれかを含む</button>
+    </div>
+</div>      
 </div>
         
         
@@ -222,6 +253,15 @@ const pcImages = [
 
   document.getElementById("hero-sp").srcset = spRandom;
   document.getElementById("hero-pc").src = pcRandom;
+
+// ===== CSV URL =====
+const CSV_URL = "data0628.csv";
+  
+const LIVER_CSV_URL = "niji/liver0628.csv";
+  
+  
+let allSongs=[];
+  
   
 // ===== CSV読み込み（カンマ入り対応） =====
 let currentSort = "date-new";  
@@ -462,13 +502,192 @@ document.getElementById("toggle-filters-btn").onclick = function() {
     arrow.textContent = "▼"; // 閉じている時は下向き矢印
   }
 };
-   
-// ===== CSV URL =====
-const CSV_URL = "data0616.csv";
-let allSongs=[];
 
+// --- 状態管理 ---
+let liverMaster = [];       // CSVから読み込んだ全ライバーのマスターデータ
+let selectedLivers = [];    // 現在ユーザーが選択しているライバー名の配列（['甲斐田晴', '弦月藤士郎'] など）
+let searchMode = 'and';
 
+// DOM要素の取得
+const input = document.getElementById('l-search-box');
+const suggContainer = document.getElementById('suggestions');
+const tagsArea = document.getElementById('selected-tags');
 
+// --- 初期化 ---
+async function initializeLiverSearch() {
+    input.placeholder = "データを読み込み中...";
+    input.disabled = true;
+  
+    try {
+        const lRes = await fetch(LIVER_CSV_URL);
+        const lText = await lRes.text();
+
+        // ライバーマスターの読み込みとパース
+        liverMaster = parseCSV(lText).map(row => ({
+            name: row["名前"] ? row["名前"].trim() : "", 
+            kana: row["読み"] ? row["読み"].trim() : "",
+            fullKana: row["完全読み"] ? row["完全読み"].trim() : "",
+            isGraduated: row["卒業"] === "TRUE",
+          isKaidaRelated: row["甲斐田"] === "TRUE",
+            // ライバーごとのカラー設定
+            lColorL: row["淡いライバーカラー"] ,
+            lText: row["ライバー文字色"] 
+        }));
+      
+        input.placeholder = "ライバー名を選択・入力...";
+        input.disabled = false;
+    } catch (e) {
+        console.error("ライバーデータの読み込みに失敗しました:", e);
+        input.placeholder = "データの読み込みに失敗しました。";
+    }
+
+    // 「ライバー選択を全解除」ボタンのイベント
+    document.getElementById("liverClearAll").onclick = () => {
+        selectedLivers = []; 
+        updateUI();          
+    };
+}
+
+// --- 検索・サジェスト処理 ---
+function renderSuggestions(filterText = "") {
+    const val = filterText.trim().toLowerCase();
+    
+    // 1文字の時、漢字か数字以外（ひらがな・カタカナ・アルファベットの1文字入力）ならサジェストしない
+    if (val !== "" && val.length === 1 && !/^[\u4E00-\u9FFF0-9]$/.test(val)) {
+        suggContainer.style.display = 'none';
+        return;
+    }
+  
+    // 検索条件にマッチするライバーを抽出
+    const matches = liverMaster.filter(l => {
+        if (selectedLivers.includes(l.name)) return false; // 既に選択されているライバーは除外
+      if (!l.isKaidaRelated) return false;
+        if (val === "") return true; 
+
+        const nameMatch = (l.name || "").toLowerCase().startsWith(val);
+        const keywords = (l.kana || "").toLowerCase().split(/\s+/); 
+        const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
+        const fullKanaKeywords = (l.fullKana || "").toLowerCase().split(/\s+/);
+        const fullKanaMatch = fullKanaKeywords.some(keyword => keyword === val);
+      
+        return nameMatch || kanaMatch || fullKanaMatch ;
+    });
+
+    suggContainer.innerHTML = '';
+    
+    if (matches.length > 0) {
+        const fragment = document.createDocumentFragment();
+        matches.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            if (m.isGraduated) div.classList.add('is-graduated'); // 卒業ライバーのスタイル
+            
+            div.textContent = m.name;
+            div.onclick = (e) => {
+                e.stopPropagation();
+                addLiver(m.name); 
+            };
+            fragment.appendChild(div);
+        });
+        suggContainer.appendChild(fragment);
+        suggContainer.style.display = 'block';
+    } else {
+        suggContainer.style.display = 'none';
+    }
+}
+
+// ライバーを選択したときの処理
+function addLiver(name) {
+    if (!selectedLivers.includes(name)) {
+        selectedLivers.push(name);
+        input.value = '';
+        if (suggContainer) suggContainer.style.display = 'none'; // サジェストを閉じる
+        updateUI(); // タグ描画とカラー反映
+    }
+}
+
+// 選択されたライバータグの「×」を押したときの処理
+function removeLiver(name) {
+    selectedLivers = selectedLivers.filter(l => l !== name);
+    updateUI();
+}
+// 検索モード（AND / EXACT / OR）の切り替え
+function setSearchMode(mode) {
+    searchMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    if (typeof updateCount === "function") updateCount(); // 全体コードがある場合はカウントを更新
+}
+// --- UI（タグ描画・サイトカラー連動）の更新 ---
+function updateUI() {
+    // 1. 選択済みタグの描画
+    tagsArea.innerHTML = selectedLivers.map(name => {
+        const d = liverMaster.find(l => l.name === name);
+        if (!d) return "";
+        return `<span class="tag" style="background-color: ${d.lColorL}; border-color: ${d.lColorL}; color: ${d.lText};">
+                    ${name}
+                    <span class="remove-btn" onclick="removeLiver('${name}')" style="color: ${d.lText};">×</span>
+                </span>`;
+    }).join('');
+
+    const root = document.documentElement;
+    const showBtn = document.getElementById("showBtn");
+
+    // 2. サイト全体のカラー連動（最初に選択したライバーの色を基準にする）
+    if (selectedLivers.length > 0) {
+        const d = liverMaster.find(l => l.name === selectedLivers[0]);
+        
+        if (d) {
+            root.style.setProperty('--c-main-light', d.lColorL);
+            root.style.setProperty('--c-text-liver', d.lText);        
+        }
+    } 
+    if (!input.disabled) {
+        input.placeholder = "ライバー名を選択・入力...";
+    }
+    
+    if (typeof updateCount === "function") updateCount();
+}
+
+// --- イベントリスナーの登録 ---
+input.addEventListener('focus', () => renderSuggestions(input.value));
+input.addEventListener('input', () => renderSuggestions(input.value));
+
+// 検索ボックスの外側をクリックしたときにサジェストを閉じる処理
+document.addEventListener('click', (e) => { 
+    if (!e.target.closest('.search-container')) { 
+        if (suggContainer) suggContainer.style.display = 'none'; 
+    } 
+});
+
+// CSVパース用の簡易関数（元のコードより流用）
+function parseCSV(text) {
+    const rows = [];
+    let current = [], value = "", inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c == '"' && text[i + 1] == '"') { value += '"'; i++; }
+        else if (c == '"') inQuotes = !inQuotes;
+        else if (c == ',' && !inQuotes) { current.push(value); value = ""; }
+        else if ((c == '\n' || c == '\r') && !inQuotes) {
+            if (value || value === "") current.push(value);
+            if (current.length > 0) rows.push(current);
+            current = []; value = "";
+            if (c == '\r' && text[i + 1] == '\n') i++;
+        } else value += c;
+    }
+    if (value || value === "") current.push(value);
+    if (current.length > 0) rows.push(current);
+    const headers = rows[0];
+    return rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = row[i] ? row[i].trim() : "");
+        return obj;
+    });
+}
+// 実行
+initializeLiverSearch();  
    
 // ===== 初期ボタン描画 =====
 // 通常ユニット（歌ってみた以外）
@@ -605,26 +824,45 @@ function updateCount(){
         const titleText = (song["曲名"] || "").toLowerCase();
         if (!titleText.includes(searchTitleKeyword.toLowerCase())) return false;
     }
-// ★公開日（期間）検索の条件（当日を含める修正）
+ // ★公開日（期間）検索の条件（ここを追加）
     if (song["公開日"]) {
-        // 全ての日付オブジェクトの時間を 00:00:00 に統一して比較する
         const songDate = new Date(song["公開日"]);
-        songDate.setHours(0, 0, 0, 0);
         
+        // 開始日が設定されていて、曲の公開日がそれより前なら除外
         if (searchDateStart !== "") {
             const startDate = new Date(searchDateStart);
-            startDate.setHours(0, 0, 0, 0);
-            if (songDate < startDate) return false; // 開始日当日より前なら除外
+            if (songDate < startDate) return false;
         }
         
+        // 終了日が設定されていて、曲の公開日がそれより後なら除外
         if (searchDateEnd !== "") {
             const endDate = new Date(searchDateEnd);
-            endDate.setHours(0, 0, 0, 0);
-            if (songDate > endDate) return false; // 終了日当日より後なら除外
+            if (songDate > endDate) return false;
         }
     } else if (searchDateStart !== "" || searchDateEnd !== "") {
+        // 日付条件が入っているのに、曲の公開日データが空の場合は除外
         return false;
+    }  
+   // ========== ★修正：モード選択に対応したライバー検索絞り込み ==========
+   if (selectedLivers.length > 0) {
+    // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
+    const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
+    
+    let isMatch = false;
+
+    if (searchMode === 'or') {
+        isMatch = selectedLivers.some(liver => collabLivers.includes(liver));
+    } else if (searchMode === 'exact') {
+        const isSameLength = collabLivers.length === selectedLivers.length;
+        const hasAllLivers = selectedLivers.every(liver => collabLivers.includes(liver));
+        isMatch = isSameLength && hasAllLivers;
+    } else {
+        isMatch = selectedLivers.every(liver => collabLivers.includes(liver));
     }
+    
+    if (!isMatch) return false;
+}
+    // ==================================================================
     return true;
   });
   
@@ -701,21 +939,35 @@ document.getElementById("showBtn").onclick = (e)=>{
     
     if (song["公開日"]) {
         const songDate = new Date(song["公開日"]);
-        songDate.setHours(0, 0, 0, 0);
-        
         if (searchDateStart !== "") {
             const startDate = new Date(searchDateStart);
-            startDate.setHours(0, 0, 0, 0);
             if (songDate < startDate) return false;
         }
         if (searchDateEnd !== "") {
             const endDate = new Date(searchDateEnd);
-            endDate.setHours(0, 0, 0, 0);
             if (songDate > endDate) return false;
         }
     } else if (searchDateStart !== "" || searchDateEnd !== "") {
         return false;
     }
+   if (selectedLivers.length > 0) {
+    // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
+    const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
+    
+    let isMatch = false;
+
+    if (searchMode === 'or') {
+        isMatch = selectedLivers.some(liver => collabLivers.includes(liver));
+    } else if (searchMode === 'exact') {
+        const isSameLength = collabLivers.length === selectedLivers.length;
+        const hasAllLivers = selectedLivers.every(liver => collabLivers.includes(liver));
+        isMatch = isSameLength && hasAllLivers;
+    } else {
+        isMatch = selectedLivers.every(liver => collabLivers.includes(liver));
+    }
+    
+    if (!isMatch) return false;
+}
     return true;
   });
   // 曲調でソート（未選択ならランダム表示）
@@ -929,9 +1181,10 @@ document.getElementById("resetBtn").onclick=()=>{
   selectedFeatures.clear();
   searchDateStart = ""; // ★ここを追加
   searchDateEnd = "";   // ★ここを追加
-  
   searchKeyword = ""; 
   searchTitleKeyword = "";
+  selectedLivers = [];
+  setSearchMode('and');
   
   const searchInput = document.getElementById('creatorSearch');
   if(searchInput) searchInput.value = "";
@@ -944,6 +1197,12 @@ document.getElementById("resetBtn").onclick=()=>{
   const dateEndInput = document.getElementById('dateEnd');
   if(dateEndInput) dateEndInput.value = "";
 
+  const liverInput = document.getElementById('l-search-box');
+  if(liverInput) liverInput.value = "";
+  
+  const tagsArea = document.getElementById('selected-tags');
+  if (tagsArea) tagsArea.innerHTML = "";
+  
   document.querySelectorAll(".toggle")
     .forEach(b=>b.classList.remove("active"));
   unitButtons().forEach(btn => {
@@ -960,7 +1219,7 @@ document.getElementById("resetBtn").onclick=()=>{
     .forEach(b=>b.classList.remove("active"));
 
   document
-    .querySelector('.sortBtn[data-sort="random"]')
+    .querySelector('.sortBtn[data-sort="date-new"]')
     .classList.add("active");
 
   updateRelevanceButton();  // ← 追加（超重要）
@@ -970,3 +1229,4 @@ document.getElementById("resetBtn").onclick=()=>{
 </script>
 </body>
 </html>
+
