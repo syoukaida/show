@@ -16,6 +16,14 @@
   --c-text-main: #1f2a2e;
   --c-text-sub2: #455257;
   --c-text-sub: #6b7a80;
+
+  --c-main-light:#4DD7E3;
+  --c-sub-pd:#4DD7E3;
+  --c-text-liver:#FFFFFF;
+  --c-main-light-shadow: rgba(0,0,0,0.2);
+  --c-main-light-bg:rgba(30, 196, 238, 0.1);
+  
+
   
 　--space-section: 80px;
   --space-card: 32px;
@@ -1205,3 +1213,119 @@ color:var(--c-text-main);
         /* アニメーションさせたい場合はここを調整 */
         margin-bottom: 20px;
       }
+input#l-search-box { 
+   width: 100%;
+  padding: 10px;
+  border: 1px solid var(--c-bg-sub); /* 変数を使う */
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input#l-search-box:focus { 
+    outline: none;
+  border: 1.5px solid var(--c-kaida); /* ここで甲斐田カラーを適用 */
+  box-shadow: 0 0 5px var(--c-kaida-line);
+}
+input#l-search-box:focus-visible {
+  outline: none;
+}
+.suggestions { 
+    position: absolute; 
+    width: 80%; 
+    max-height: 300px; 
+    border: 1px solid #ccc; 
+    background: white; 
+    overflow-y: auto; 
+    display: none; 
+    z-index: 1000; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+}
+
+.suggestion-item { 
+    padding: 6px; 
+    cursor: pointer; 
+    border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+
+.suggestion-item:hover { 
+    background-color: var(--c-kaida); 
+}
+.suggestion-item.is-graduated {
+    background-color: #f5f5f5; /* ほんのりグレー */
+    color: #666;              /* 文字色も少し薄く */
+}
+
+.suggestion-item.is-graduated:hover {
+    background-color: var(--c-sub-pd); 
+    color: var(--c-text-main); 
+}
+.tags-area { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+    margin-bottom: 12px; 
+    min-height: 32px; 
+}
+
+.tag {
+    /* color, background-color, border-color はJSで動的に変わるため、ここでは基本構造のみ */
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    font-weight: 700; 
+    transition: all 0.3s ease;
+}
+
+/* 削除ボタン（×） */
+.tag .remove-btn { 
+    cursor: pointer; 
+    margin-left: 8px; 
+    font-weight: bold; 
+}
+
+.tag .remove-btn:hover {
+    opacity: 0.6;
+}
+.search-mode-selector {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    margin-bottom: 2px;
+    justify-content: flex-start;
+    border-top: 1px dashed var(--c-kaida);
+}
+
+.mode-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    margin-top: 10px;
+    border: 1px solid #d1dce0; /* 基本は控えめな色 */
+    border-radius: 12px;       /* 丸くする */
+    box-shadow: none;          /* 重い影は消す */
+    color: var(--c-text-sub);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 0 12px;           /* 内側の余白 */
+    line-height: 30px;         /* ボタンの高さ */
+    transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+    background: var(--c-main);
+    color: #FFF; 
+    border-color: var(--c-main);
+}
+
+@media (max-width: 768px) {
+    .mode-btn { font-size: 10px; }
+}
+
+@media (max-width: 450px) {
+    .mode-btn { font-size: 8px; }
+}
