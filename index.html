@@ -254,7 +254,7 @@ const pcImages = [
   document.getElementById("hero-pc").src = pcRandom;
 
 // ===== CSV URL =====
-const CSV_URL = "data0717.csv";
+const CSV_URL = "data0803.csv";
 const LIVER_CSV_URL = "niji/liver0704.csv";
   
   
@@ -395,7 +395,7 @@ document.getElementById("featureClearAll").onclick = () => {
 // mediaとライブを統合して順番通りに配置（2行に折り返される）
 const mediaTags = [
   "MV公開","3D映像公開","本人の作詞/作曲","ミリオン達成",
-  "有観客ライブ披露済み","有観客ライブ未披露","独特なコーレス"
+  "有観客ライブ披露済み(フル尺)","有観客ライブ披露済み(メドレー)","有観客ライブ未披露","独特なコーレス"
 ];
 const bpmTags = ["ゆっくり","中くらい","速い","かなり速い"];
 const featureTags = [
@@ -789,9 +789,7 @@ function updateCount(){
     if (!selectedUnits.has(unit)) return false;
 
     for(let t of selectedMedia){
-      if(t === "有観客ライブ未披露") {
-        if(song["有観客ライブ披露済み"] !== "FALSE") return false;
-      } else if(t === "ミリオン達成") {
+      if(t === "ミリオン達成") {
         // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
         const viewsCount = parseInt(song["再生数"]) || 0;
         if(viewsCount <= 100) return false; 
@@ -899,9 +897,7 @@ document.getElementById("showBtn").onclick = (e)=>{
 
 
    for(let t of selectedMedia){
-      if(t === "有観客ライブ未披露") {
-        if(song["有観客ライブ披露済み"] !== "FALSE") return false;
-      } else if(t === "ミリオン達成") {
+      if(t === "ミリオン達成") {
         // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
         const viewsCount = parseInt(song["再生数"]) || 0;
         if(viewsCount <= 100) return false; 
@@ -1227,4 +1223,3 @@ document.getElementById("resetBtn").onclick=()=>{
 </script>
 </body>
 </html>
-
