@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+https://docs.google.com/spreadsheets/d/e/2PACX-1vRj3tDjwyRIC_9WEmgP8LgeV0Z4xwzaiG7YijXLWTjl9m4PjJ6GVcCgJXEUYFIZ3LU9EQ3yGDWUnqU3/pub?gid=0&single=true&output=csv<!DOCTYPE html>
 <html lang="ja">
 <head>
    <meta charset="UTF-8">
@@ -79,27 +79,54 @@
 </div>
  </div> 
 <div class="filter-group">  
-<h2>活動形態（ユニットなど）  <span class="hint">
-    ?
-    <span class="hint-text">
-      ・複数選択可（OR検索）<br>
-    </span></h2>
+  <!-- 大見出し -->
+  <h2>曲のタイプから探す
+    <span class="hint">?
+      <span class="hint-text">
+        ・複数選択可（OR検索）<br>
+        ・配信の検索は日付、曲名、歌手名、コラボライバーのみ対応
+      </span>
+    </span>
+  </h2>
   
+  <!-- セクション1：オリジナル曲 -->
+  <h4>オリジナル楽曲</h4>
+  <div id="unitButtons" class="group">
+    <!-- JSでボタンが生成される想定（ソロ、VΔLZ、ROF-MAOなど） -->
+  </div>
   
-<!-- 通常ユニット -->
-<div id="unitButtons" class="group"></div>
+  <!-- セクション2：歌ってみた -->
+  <h4>歌ってみた（カバー）</h4>
+  <div id="specialUnitButtons" class="group">
+  </div>
+  
+  <!-- 一括操作ボタン類（位置はお好みで調整してください） -->
+  <div class="unit-mini">
+    <button id="unitSelectAll">全選択</button>
+    <button id="unitClearAll">全解除</button>
+    <button id="unitSelectOriginal">オリジナル曲のみ選択</button>
+    <button id="unitSelectCover">歌ってみたのみ選択</button>
+  </div>
 
-<!-- 歌ってみた専用行 -->
- 
-<div id="specialUnitButtons" class="group">
- 
-</div>
+<div class="stream-filter-box">
+  <h4>配信アーカイブを含めて検索（整備中）</h4>
+  <p class="tittya">弾き語り以外は整備中<BR>表示する曲数が多いと挙動がおかしくなる可能性があるため、他条件での絞り込みの併用をおすすめします！（日付、曲名、歌手名、コラボライバーで絞り込み可）</p>
+  <div id="streamUnitButtons" class="group">
+  </div>
    <div class="unit-mini">
-  <button id="unitSelectAll">全選択</button>
-  <button id="unitClearAll">全解除</button>
-     <button id="unitSelectOriginal">オリジナル曲のみ選択</button>
-  <button id="unitSelectCover">歌ってみたのみ選択</button>
+    <button id="streamunitSelectAll">全選択</button>
+    <button id="streamunitClearAll">全解除</button>
+  </div>
+  <!-- 例：分類フィルターの近くに配置 -->
+<div class="search-mode-selector">
+  <label class="mode-btn active">
+    <input type="radio" name="unitMode" value="and" checked style="display: none;"> すべて含む (AND)
+  </label>
+  <label class="mode-btn">
+    <input type="radio" name="unitMode" value="or" style="display: none;"> いずれかを含む (OR)
+  </label>
 </div>
+  </div>
 </div>
 <div class="filter-group">
 <h2>楽曲情報 <span class="hint">
@@ -114,7 +141,8 @@
   
 <div id="toggle-filters-btn" class="toggle-filters-btn">
   <div class="btn-content">
-    他の条件で絞り込む <span>▼</span>
+    <img src="images/mizuirokamon.png" alt="icon" class="btn-icon">
+    他の条件でも探す <span>▼</span>
   </div>
 </div>
 
@@ -174,7 +202,7 @@
   <input type="text" id="creatorSearch" class="search-box" placeholder="名前を入力">
 </div>
 <div class="filter-group"> 
-    <h2>一緒に歌ったライバーで検索 
+    <h2>共演したライバーで検索 
         <span class="hint">? 
             <span class="hint-text">
                 ・愛称でも検索可<BR>
@@ -213,6 +241,7 @@
 <div class="button-group">
   <button id="showBtn">紹介だ！<span class="showBtn-hint">(表示)</span></button>
   <button id="resetBtn">撤回だ！(リセット)</button>
+  <button type="button" id="scroll-to-top-btn" title="ページ最上部へ戻る">▲</button>
 </div>
   
 
@@ -226,7 +255,8 @@
   <button class="sortBtn" data-sort="date-old">公開日が古い順</button>
   <button class="sortBtn" data-sort="views">再生数順</button>
   <button class="sortBtn" data-sort="relevance">印象関連度順</button>
-</div>  
+</div>
+
 <div id="cards"></div>
   
  </section>
@@ -255,11 +285,14 @@ const pcImages = [
 
 // ===== CSV URL =====
 const CSV_URL = "data0811.csv";
+  
 const LIVER_CSV_URL = "niji/liver0704.csv";
   
+const STREAM_CSV_URL = "stream0812.csv";
   
 let allSongs=[];
-  
+let streamSongs = [];           
+let includeStreamSinging = true;  
   
 // ===== CSV読み込み（カンマ入り対応） =====
 let currentSort = "date-new";  
@@ -292,10 +325,12 @@ function parseCSV(text){
   });
 }
 // ===== 選択状態 =====
-const selectedUnits = new Set();
+const selectedNormalUnits = new Set();
+const selectedStreamUnits = new Set();
 const selectedMedia = new Set(); // 映像・ライブ統合
 const selectedBPM = new Set();
 const selectedFeatures = new Set();
+const selectedStreamCategories = new Set();
 let searchKeyword = "";
 let searchTitleKeyword = "";
 let searchDateStart = ""; // ★ここを追加
@@ -304,18 +339,57 @@ let searchDateEnd = "";   // ★ここを追加
 const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
 // 「選択されないと表示されない」特別ユニット
 const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];  // 必要に応じて追加
-
+const streamUnits = ["弾き語り", "カラオケ", "コラボ", "記念・お披露目", "ライブ","演奏のみ","音源協力"];
+  
  const unitButtons = () =>
   Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
 // 印象ボタンの要素リストを取得する共通関数（これを定義しないと動かない）
 const getFeatureButtons = () =>
   Array.from(document.querySelectorAll("#featureGrid .toggle"));
+const streamUnitButtons = () =>
+  Array.from(document.querySelectorAll("#streamUnitButtons .toggle"));
+  
+function switchUnitMode(modeValue) {
+  const radio = document.querySelector(`input[name="unitMode"][value="${modeValue}"]`);
+  if (radio) {
+    radio.checked = true;
+    
+    // 見た目（.mode-btn）のactiveクラスを更新
+    document.querySelectorAll('.mode-btn').forEach(label => label.classList.remove('active'));
+    if (radio.parentElement) {
+      radio.parentElement.classList.add('active');
+    }
+  }
+}
+  
+// 1. 全選択
+document.getElementById("streamunitSelectAll").onclick = () => {
+  streamUnitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedStreamUnits.add(name);
+    btn.classList.add("active");
+  });
+  switchUnitMode('or');
+  updateCount();
+};
+
+// 2. 全解除
+document.getElementById("streamunitClearAll").onclick = () => {
+  streamUnitButtons().forEach(btn => {
+    const name = btn.textContent;
+    selectedStreamUnits.delete(name);
+    btn.classList.remove("active");
+  });
+  switchUnitMode('and');
+  updateCount();
+}; 
+  
   
 // 1. 全選択
 document.getElementById("unitSelectAll").onclick = () => {
   unitButtons().forEach(btn => {
     const name = btn.textContent;
-    selectedUnits.add(name);
+    selectedNormalUnits.add(name);
     btn.classList.add("active");
   });
   updateCount();
@@ -325,7 +399,7 @@ document.getElementById("unitSelectAll").onclick = () => {
 document.getElementById("unitClearAll").onclick = () => {
   unitButtons().forEach(btn => {
     const name = btn.textContent;
-    selectedUnits.delete(name);
+    selectedNormalUnits.delete(name);
     btn.classList.remove("active");
   });
   updateCount();
@@ -337,10 +411,10 @@ document.getElementById("unitSelectOriginal").onclick = () => {
     const name = btn.textContent;
     if (!specialUnits.includes(name)) {
       // 歌ってみた（specialUnits）以外をアクティブにする
-      selectedUnits.add(name);
+      selectedNormalUnits.add(name);
       btn.classList.add("active");
     } else {
-      selectedUnits.delete(name);
+      selectedNormalUnits.delete(name);
       btn.classList.remove("active");
     }
   });
@@ -353,10 +427,10 @@ document.getElementById("unitSelectCover").onclick = () => {
     const name = btn.textContent;
     if (specialUnits.includes(name)) {
       // 歌ってみた（specialUnits）だけをアクティブにする
-      selectedUnits.add(name);
+      selectedNormalUnits.add(name);
       btn.classList.add("active");
     } else {
-      selectedUnits.delete(name);
+      selectedNormalUnits.delete(name);
       btn.classList.remove("active");
     }
   });
@@ -392,6 +466,23 @@ document.getElementById("featureClearAll").onclick = () => {
   updateCount();
   updateRelevanceButton();
 };
+  
+let showDescription = false;
+
+// 2. ボタンのクリックイベント設定
+const toggleDescBtn = document.getElementById("toggleDescBtn");
+if (toggleDescBtn) {
+  toggleDescBtn.onclick = () => {
+    // ON/OFFを反転
+    showDescription = !showDescription;
+    
+    // 見た目（activeクラス）の切り替え
+    toggleDescBtn.classList.toggle("active", showDescription);
+    
+    // カード表示を更新（再描画）
+    updateCount(); // ※再描画を行う関数名に合わせて変更してください
+  };
+}  
 // mediaとライブを統合して順番通りに配置（2行に折り返される）
 const mediaTags = [
   "MV公開","3D映像公開","本人の作詞/作曲","ミリオン達成",
@@ -421,25 +512,31 @@ const featureTags = [
 ];
 
 // ===== ボタン生成関数 =====
-function createButtons(list, containerId, selectedSet, limit=null, exclusiveGroups=[]){
+// 引数の最後に isInitialActive = false を追加
+function createButtons(list, containerId, selectedSet, limit=null, exclusiveGroups=[], isInitialActive=false){
   const container = document.getElementById(containerId);
   list.forEach(item=>{
-    const btn = document.createElement("div");
+    const btn = document.createElement("div"); // 既存のdiv生成のまま
     btn.textContent = item;
     btn.className="toggle";
+
+    // 💡 修正箇所：初期表示でONにする場合、activeクラスを付与する
+    if (isInitialActive) {
+      btn.classList.add("active");
+    }
+
     btn.onclick = ()=>{
       const isActive = selectedSet.has(item);
-     if(isActive){ 
-  selectedSet.delete(item); 
-  btn.classList.remove("active"); 
-  updateCount();
+      if(isActive){ 
+        selectedSet.delete(item); 
+        btn.classList.remove("active"); 
+        updateCount();
 
-  if(containerId === "featureGrid"){
-    updateRelevanceButton();
-  }
-
-  return; 
-}
+        if(containerId === "featureGrid"){
+          updateRelevanceButton();
+        }
+        return; 
+      }
       if(limit && selectedSet.size>=limit) return;
       exclusiveGroups.forEach(group=>{
         if(group.includes(item)){
@@ -451,18 +548,17 @@ function createButtons(list, containerId, selectedSet, limit=null, exclusiveGrou
           });
         }
       });
-     selectedSet.add(item);
-btn.classList.add("active");
-updateCount();
+      selectedSet.add(item);
+      btn.classList.add("active");
+      updateCount();
 
-if(containerId === "featureGrid"){
-  updateRelevanceButton();
-}
+      if(containerId === "featureGrid"){
+        updateRelevanceButton();
+      }
     };
     container.appendChild(btn);
   });
 }
-
   
 // 全てのヒント要素を取得
 const hints = document.querySelectorAll('.hint');
@@ -689,19 +785,15 @@ initializeLiverSearch();
    
 // ===== 初期ボタン描画 =====
 // 通常ユニット（歌ってみた以外）
-createButtons(
-  units.filter(u => !specialUnits.includes(u)),
-  "unitButtons",
-  selectedUnits
-);
+// 1. オリジナル曲（「units」から「specialUnits以外」を抽出。初期ONなので 最後に true を渡す）
+const originalUnits = units.filter(name => !specialUnits.includes(name));
+createButtons(originalUnits, "unitButtons", selectedNormalUnits, null, [], true);
 
+// 2. 歌ってみた（「specialUnits」を生成。初期ONなので 最後に true を渡す）
+createButtons(specialUnits, "specialUnitButtons", selectedNormalUnits, null, [], true);
 
-// 特別ユニット（歌ってみた）
-createButtons(
-  units.filter(u => specialUnits.includes(u)),
-  "specialUnitButtons",
-  selectedUnits
-);
+// 3. 配信アーカイブ（「streamUnits」を生成。初期OFFなので false、または何も書かない）
+createButtons(streamUnits, "streamUnitButtons", selectedStreamUnits, null, [], false);
 
 createButtons(mediaTags,"mediaButtons",selectedMedia); // 映像・ライブ統合
 createButtons(bpmTags,"bpmButtons",selectedBPM);
@@ -730,13 +822,51 @@ document.getElementById('dateEnd').addEventListener('change', (e) => {
     updateCount();
 });
 // ===== CSV読み込み =====
-fetch(CSV_URL).then(res=>res.text()).then(text=>{
-  allSongs=parseCSV(text);
+Promise.all([
+  fetch(CSV_URL).then(res => res.text()),
+  fetch(STREAM_CSV_URL).then(res => res.text())
+]).then(([songText, streamText]) => {
+  
+  // 1. 通常の曲データ（配信フラグをfalseにしておく）
+  allSongs = parseCSV(songText).map(song => ({ ...song, isStream: false }));
+  
+  // 2. 配信歌枠データ（配信フラグをtrueにし、列名を検索の仕組みに合わせる）
+  streamSongs = parseCSV(streamText).map(song => {
+    const categoryStr = song["分類"] || "";
+    const categories = categoryStr ? categoryStr.split(/[\s,、・]+/).filter(Boolean) : [];
+    return {
+      "ユニット": "配信歌枠", // 絞り込みで弾かれないためのダミー（またはお好みの文字）
+      "公開日": song["配信日"] || "",       // 配信日 ➔ 公開日
+      "曲名": song["曲名"] || "",
+      "作詞": song["歌手名"] || "",       // 歌手名 ➔ 歌唱
+      "コラボライバー": song["コラボライバー"] || "",
+      "サムネ用リンク": song["リンク"] || "",  
+      "配信内容": song["配信内容"] || "",
+      "甲斐田歌唱": song["甲斐田歌唱"] || "",
+     "演奏": song["演奏"] || "",
+      "分類": song["分類"] || "",
+      isStream: true                     // 配信データである目印
+    };
+  });
+  
   unitButtons().forEach(btn => {
     const name = btn.textContent;
-    selectedUnits.add(name);
+    selectedNormalUnits.add(name);
     btn.classList.add("active");
   });
+  
+  const streamBtn = document.getElementById("stream-singing-btn");
+  if (streamBtn) {
+    streamBtn.classList.remove("active"); // 👈 起動時にボタンの光を消す！
+    includeStreamSinging = false;         // 👈 起動時は配信を検索に入れない！
+    
+    streamBtn.onclick = function() {
+      this.classList.toggle("active");
+      includeStreamSinging = this.classList.contains("active");
+      updateCount();
+    };
+  }
+  
   updateCount();
   updateRelevanceButton();
 });
@@ -781,14 +911,60 @@ function updateRelevanceButton(){
     relevanceBtn.classList.remove("disabled");
   }
 }  
+  
+document.querySelectorAll('input[name="unitMode"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    // すべてのボタンから active を外す
+    document.querySelectorAll('.mode-btn').forEach(label => label.classList.remove('active'));
+    // 選択されたラジオボタンの親ラベルに active を付ける
+    radio.parentElement.classList.add('active');
+    
+    updateCount(); // 検索再計算
+  });
+});
+  
+  
 // ===== 条件に合う曲数更新 =====
 function updateCount(){
   if(!allSongs.length) return;
-  let results = allSongs.filter(song=>{
-    const unit = song["ユニット"].trim();
-    if (!selectedUnits.has(unit)) return false;
+  let targetSongs = includeStreamSinging ? [...allSongs, ...streamSongs] : [...allSongs];
 
-    for(let t of selectedMedia){
+  let results = targetSongs.filter(song => {
+    // どちらのユニットも1つも選ばれていなければ除外
+    if (selectedNormalUnits.size === 0 && selectedStreamUnits.size === 0) return false;
+
+    // ----------------------------------------------------
+    // 1. 配信曲の判定
+    // ----------------------------------------------------
+    if (song.isStream) {
+      if (!song["配信内容"] || song["配信内容"].trim() === "") return false;
+      if (selectedFeatures.size > 0 || selectedBPM.size > 0 || selectedMedia.size > 0) return false;
+
+      // 配信用の選択（selectedStreamUnits）が何も選ばれていなければ、配信曲はヒットさせない
+      if (selectedStreamUnits.size === 0) return false;
+
+      const streamCategories = song["分類"] ? song["分類"].split(/[、,]+/).map(s => s.trim()) : [];
+      const unitMode = document.querySelector('input[name="unitMode"]:checked').value;
+
+      let isCategoryMatch = false;
+
+      if (unitMode === 'and') {
+        // 配信曲用に選択されたユニットが「すべて」曲の分類に含まれるか
+        // ※「ソロ」などの通常曲ユニットは混ざっていないので、正しくAND判定できる！
+        isCategoryMatch = [...selectedStreamUnits].every(u => streamCategories.includes(u));
+      } else {
+        // 配信曲用に選択されたユニットの「どれか1つ」が含まれるか
+        isCategoryMatch = [...selectedStreamUnits].some(u => streamCategories.includes(u));
+      }
+
+      if (!isCategoryMatch) return false;
+    // 2. 通常曲の判定
+    } else {
+        const unit = (song["ユニット"] || "").trim();
+        if (!selectedNormalUnits.has(unit)) return false;
+    }
+  
+   for(let t of selectedMedia){
       if(t === "ミリオン達成") {
         // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
         const viewsCount = parseInt(song["再生数"]) || 0;
@@ -797,6 +973,7 @@ function updateCount(){
         if(song[t] !== "TRUE") return false;
       }
     }
+
     for(let t of selectedBPM){
       const bpm = parseInt(song["BPM"])||0;
       let label="";
@@ -807,8 +984,6 @@ function updateCount(){
       if(!selectedBPM.has(label)) return false;
     }
     for(let f of selectedFeatures){ if((parseInt(song[f])||0)<1) return false; }
-    
-    // ★クリエイター検索（追加）
     if (searchKeyword !== "") {
         const k = searchKeyword.toLowerCase();
         const lyricist = (song["作詞"] || "").toLowerCase();
@@ -843,17 +1018,19 @@ function updateCount(){
    if (selectedLivers.length > 0) {
     // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
     const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
+    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
     
+    const involvedLivers = collabLivers.concat(instrumentalLivers);
     let isMatch = false;
 
     if (searchMode === 'or') {
-        isMatch = selectedLivers.some(liver => collabLivers.includes(liver));
+        isMatch = selectedLivers.some(liver => involvedLivers.includes(liver));
     } else if (searchMode === 'exact') {
-        const isSameLength = collabLivers.length === selectedLivers.length;
-        const hasAllLivers = selectedLivers.every(liver => collabLivers.includes(liver));
+        const isSameLength = involvedLivers.length === selectedLivers.length;
+        const hasAllLivers = selectedLivers.every(liver => involvedLivers.includes(liver));
         isMatch = isSameLength && hasAllLivers;
     } else {
-        isMatch = selectedLivers.every(liver => collabLivers.includes(liver));
+        isMatch = selectedLivers.every(liver => involvedLivers.includes(liver));
     }
     
     if (!isMatch) return false;
@@ -890,12 +1067,45 @@ document.querySelectorAll(".sortBtn").forEach(btn=>{
 document.getElementById("showBtn").onclick = (e)=>{
   const container=document.getElementById("cards");
   container.innerHTML="";
-  let results = allSongs.filter(song=>{
-   const unit = song["ユニット"].trim();
-    if (!selectedUnits.has(unit)) return false;
+  let targetSongs = includeStreamSinging ? [...allSongs, ...streamSongs] : [...allSongs];
+  
+let results = targetSongs.filter(song => {
+    // どちらのユニットも1つも選ばれていなければ除外
+    if (selectedNormalUnits.size === 0 && selectedStreamUnits.size === 0) return false;
 
+    // ----------------------------------------------------
+    // 1. 配信曲の判定
+    // ----------------------------------------------------
+    if (song.isStream) {
+      if (!song["配信内容"] || song["配信内容"].trim() === "") return false;
+      if (selectedFeatures.size > 0 || selectedBPM.size > 0 || selectedMedia.size > 0) return false;
 
+      // 配信用の選択（selectedStreamUnits）が何も選ばれていなければ、配信曲はヒットさせない
+      if (selectedStreamUnits.size === 0) return false;
 
+      const streamCategories = song["分類"] ? song["分類"].split(/[、,]+/).map(s => s.trim()) : [];
+      const unitMode = document.querySelector('input[name="unitMode"]:checked').value;
+
+      let isCategoryMatch = false;
+
+      if (unitMode === 'and') {
+        // 配信曲用に選択されたユニットが「すべて」曲の分類に含まれるか
+        // ※「ソロ」などの通常曲ユニットは混ざっていないので、正しくAND判定できる！
+        isCategoryMatch = [...selectedStreamUnits].every(u => streamCategories.includes(u));
+      } else {
+        // 配信曲用に選択されたユニットの「どれか1つ」が含まれるか
+        isCategoryMatch = [...selectedStreamUnits].some(u => streamCategories.includes(u));
+      }
+
+      if (!isCategoryMatch) return false;
+
+    // 2. 通常曲の判定
+    } else {
+        const unit = (song["ユニット"] || "").trim();
+        if (!selectedNormalUnits.has(unit)) return false;
+    }
+  
+  
    for(let t of selectedMedia){
       if(t === "ミリオン達成") {
         // ★ここを追加：再生数が100を超えているか判定（100以下なら除外）
@@ -905,9 +1115,9 @@ document.getElementById("showBtn").onclick = (e)=>{
         if(song[t] !== "TRUE") return false;
       }
     }
-    
+
     for(let t of selectedBPM){
-      const bpm=parseInt(song["BPM"])||0;
+      const bpm = parseInt(song["BPM"])||0;
       let label="";
       if(bpm<=100) label="ゆっくり";
       else if(bpm<=139) label="中くらい";
@@ -916,7 +1126,6 @@ document.getElementById("showBtn").onclick = (e)=>{
       if(!selectedBPM.has(label)) return false;
     }
     for(let f of selectedFeatures){ if((parseInt(song[f])||0)<1) return false; }
-    
     // ★クリエイター検索（追加）
     if (searchKeyword !== "") {
         const k = searchKeyword.toLowerCase();
@@ -944,20 +1153,22 @@ document.getElementById("showBtn").onclick = (e)=>{
     } else if (searchDateStart !== "" || searchDateEnd !== "") {
         return false;
     }
-   if (selectedLivers.length > 0) {
+  if (selectedLivers.length > 0) {
     // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
     const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
+    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
     
+    const involvedLivers = collabLivers.concat(instrumentalLivers);
     let isMatch = false;
 
     if (searchMode === 'or') {
-        isMatch = selectedLivers.some(liver => collabLivers.includes(liver));
+        isMatch = selectedLivers.some(liver => involvedLivers.includes(liver));
     } else if (searchMode === 'exact') {
-        const isSameLength = collabLivers.length === selectedLivers.length;
-        const hasAllLivers = selectedLivers.every(liver => collabLivers.includes(liver));
+        const isSameLength = involvedLivers.length === selectedLivers.length;
+        const hasAllLivers = selectedLivers.every(liver => involvedLivers.includes(liver));
         isMatch = isSameLength && hasAllLivers;
     } else {
-        isMatch = selectedLivers.every(liver => collabLivers.includes(liver));
+        isMatch = selectedLivers.every(liver => involvedLivers.includes(liver));
     }
     
     if (!isMatch) return false;
@@ -1035,15 +1246,57 @@ a.appendChild(thumb);
 card.appendChild(a);
     }
     // 曲名
+   // 曲名
     const title=document.createElement("div");
     title.className="title";
-    title.textContent=r["曲名"];
+    
+    if (r.isStream && r["配信内容"]) {
+      // 配信データのときは「【配信内容】曲名」にする
+      title.textContent = `【${r["配信内容"]}】${r["曲名"]}`;
+    } else {
+      // 通常の曲のときは今まで通り「曲名」だけ
+      title.textContent = r["曲名"];
+    }
+    
     card.appendChild(title);
     
    // meta情報
 const meta = document.createElement("div");
 meta.className = "meta";
+    
+if (r.isStream) {
+  // コラボライバーの入力があるかチェック
+  const hasCollab = r["コラボライバー"] && r["コラボライバー"].trim() !== "";
+  const collabText = hasCollab ? r["コラボライバー"].trim() : "";
+  
+  let singersHtml = "";
 
+  // 💡 甲斐田歌唱列が "TRUE" のとき
+  if (r["甲斐田歌唱"] === "TRUE") {
+    if (hasCollab) {
+      singersHtml = `歌唱：甲斐田晴、${collabText}<br>`;
+    } else {
+      singersHtml = `歌唱：甲斐田晴<br>`; // コラボなしで本人だけ歌っている場合
+    }
+  } 
+  // 💡 甲斐田歌唱列が "FALSE" のとき（＝伴奏に徹している、またはコラボ相手のみ歌唱）
+  else {
+    if (hasCollab) {
+      singersHtml = `歌唱：${collabText}<br>`; // コラボライバーのみ表示
+    } else {
+      singersHtml = ""; // コラボもいない（インストなど）なら歌唱行は非表示
+    }
+  }
+
+  const hasInstrumental = r["演奏"] && r["演奏"].trim() !== "";
+  const instrumentalHtml = hasInstrumental ? `演奏：${r["演奏"].trim()}<br>` : "";
+  
+ meta.innerHTML = `
+    ${singersHtml}
+    ${instrumentalHtml}原曲：${r["作詞"]}<br>
+    配信日：${r["公開日"]}
+  `;
+} else {
 const unitName = r["ユニット"].trim();
 
 if(specialUnits.includes(unitName)){
@@ -1063,20 +1316,32 @@ if(specialUnits.includes(unitName)){
     公開日：${r["公開日"]}
   `;
 }
-
+}
 card.appendChild(meta);
 
-    // 説明
-    if(r["説明"]){
-      const desc=document.createElement("div");
-      desc.className="desc";
-      desc.textContent=r["説明"];
-      card.appendChild(desc);
-    }
+   if (r["説明"] && showDescription) {
+  const desc = document.createElement("div");
+  desc.className = "desc";
+  desc.textContent = r["説明"];
+  card.appendChild(desc);
+}
    // リンク類
 const links = document.createElement("div");
-links.className = "links";
+    links.className = "links";
 
+    if (r.isStream) {
+      // ★配信歌枠のときは、シンプルに配信アーカイブへのボタンだけを設置
+      if(r["サムネ用リンク"]){
+        const a = document.createElement("a");
+        a.href = r["サムネ用リンク"];
+        a.target = "_blank";
+        a.textContent = "配信アーカイブ";
+        links.appendChild(a);
+      }
+    } else {
+      // ★通常曲のときは、元の複雑なリンク生成ロジックを100%そのまま通す
+      const unitName = r["ユニット"].trim();
+      
 // 既存リンク
 if(r["MVリンク"]){
   const a = document.createElement("a");
@@ -1094,7 +1359,7 @@ if(r["MVリンク"]){
 }
 
 // 3D映像リンク（1, 2, 3すべてに対応）
-const tdLinkKeys = ["3Dリンク", "3Dリンク2", "3Dリンク3"];
+const tdLinkKeys = ["3Dリンク", "3Dリンク2", "3Dリンク3","3Dリンク4"];
 tdLinkKeys.forEach(key => {
   if(r[key] && r[key].trim() !== ""){
     const a = document.createElement("a");
@@ -1156,7 +1421,7 @@ otherLinks.forEach(url=>{
 
   links.appendChild(a);
 });
-
+}
 card.appendChild(links);
     container.appendChild(card);
     
@@ -1169,7 +1434,8 @@ card.querySelectorAll('.links a').forEach(a => {
 };
 // ===== リセット処理 =====
 document.getElementById("resetBtn").onclick=()=>{
-  selectedUnits.clear();
+  selectedNormalUnits.clear();
+  selectedStreamUnits.clear();
   selectedMedia.clear();
   selectedBPM.clear();
   selectedFeatures.clear();
@@ -1197,11 +1463,29 @@ document.getElementById("resetBtn").onclick=()=>{
   const tagsArea = document.getElementById('selected-tags');
   if (tagsArea) tagsArea.innerHTML = "";
   
+  const andRadio = document.querySelector('input[name="unitMode"][value="and"]');
+  andRadio.checked = true;
+  
+  showDescription = false;
+if (toggleDescBtn) {
+  toggleDescBtn.classList.remove("active");
+}
+  // 見た目（activeクラス）の修正
+  document.querySelectorAll('.mode-btn').forEach(label => label.classList.remove('active'));
+  andRadio.parentElement.classList.add('active');
+  
+const streamBtn = document.getElementById("stream-singing-btn");
+if (streamBtn) {
+  streamBtn.classList.remove("active"); 
+  includeStreamSinging = false;
+}
+  
   document.querySelectorAll(".toggle")
     .forEach(b=>b.classList.remove("active"));
+  
   unitButtons().forEach(btn => {
     const name = btn.textContent;
-    selectedUnits.add(name);
+    selectedNormalUnits.add(name);
     btn.classList.add("active");
   });
 
@@ -1219,6 +1503,14 @@ document.getElementById("resetBtn").onclick=()=>{
   updateRelevanceButton();  // ← 追加（超重要）
 
   updateCount();
+};
+  
+// 💡 ▲ボタンを押したときに、一番上まで滑らかにスクロールさせる
+document.getElementById("scroll-to-top-btn").onclick = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 };
 </script>
 </body>
