@@ -336,6 +336,19 @@ h2:has(+ #specialUnitButtons) .hint-text {
   line-height: 20px;/*行の高さ（縦のサイズ）*/
 }
 
+#streamUnitButtons {
+  margin-top:2px;     /* 上の行との隙間 */
+  display: flex;       /* 横並び */
+  align-items: center; /* 縦位置を中央揃え */
+  gap: 4px;            /* ボタンとの間隔 */
+  margin-bottom: 0px;
+}
+#streamUnitButtons .toggle {
+  padding: 4px 9px;   /* ボタンの縦・横の余白を小さく */
+  line-height: 20px;/*行の高さ（縦のサイズ）*/
+}
+
+
 /* スマホ版でさらに小さくする場合 */
 @media (max-width: 768px) {
   #specialUnitButtons::before {
