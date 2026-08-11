@@ -1329,3 +1329,230 @@ input#l-search-box:focus-visible {
 @media (max-width: 450px) {
     .mode-btn { font-size: 8px; }
 }
+
+button.mode-btn, 
+label.mode-btn {
+max-width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    margin-top: 10px;
+    border: 1px solid #d1dce0; /* 基本は控えめな色 */
+    border-radius: 12px;       /* 丸くする */
+    box-shadow: none;          /* 重い影は消す */
+    color: var(--c-text-sub);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 0 12px;           /* 内側の余白 */
+    line-height: 30px;         /* ボタンの高さ */
+    transition: all 0.2s ease;
+  text-align: center;
+}
+
+button.mode-btn.active, 
+label.mode-btn.active {
+    background: var(--c-main-dark);
+    color: #FFF; 
+    border-color: var(--c-main-dark);
+}
+
+@media (max-width: 768px) {
+    button.mode-btn, label.mode-btn { font-size: 10px; }
+}
+
+@media (max-width: 450px) {
+    button.mode-btn, label.mode-btn { font-size: 8px; 
+  flex: 1;
+        min-width: auto;}
+}
+
+
+/* スイッチと文字を並べる枠 */
+.stream-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  justify-content: flex-start;
+  padding-top: 8px;          
+  border-top: 1px dashed var(--c-kaida);
+}
+
+/* ラベル文字の装飾 */
+.stream-switch-label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color:var(--c-text-main);
+}
+
+/* トグルスイッチの土台（OFFの状態） */
+#stream-singing-btn {
+  width: 50px;
+  height: 26px;
+  background-color: #ccc; /* OFFのときはグレー */
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0;             /* 中身の文字が消えるので余白をリセット */
+  border: none;
+  display: inline-block;
+}
+
+/* スイッチの中の丸いつまみ */
+#stream-singing-btn::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+#stream-singing-btn.active {
+  background-color: var(--c-kaida); 
+}
+
+/* スイッチが ON のとき、つまみを右に移動 */
+#stream-singing-btn.active::after {
+  transform: translateX(24px);
+}
+
+/* トップに戻るボタンの基本デザイン */
+#scroll-to-top-btn {
+  position: fixed;
+  bottom: 20px;               /* 画面の下からどれくらい浮かせるか */
+  right: 5%;                /* 画面の右からどれくらい離すか */
+  width: 34px;
+  height: 34px;
+  background-color: #faf9f6;  /* 目に優しいオフホワイトの背景 */
+  color: var(--c-text-main, #333); /* いつもの文字色 */
+  border: 1px solid var(--c-kaida, #ccc); /* 優しい点線と同じ色の細い枠線 */
+  border-radius: 50%;         /* まんまるにする */
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* ほんのり上品な影 */
+  transition: all 0.2s ease;
+  z-index: 1000;              /* 他の要素に埋もれないように最前面へ */
+}
+
+/* マウスを乗せたとき（ホバー時）のちょっと良い感じの演出 */
+#scroll-to-top-btn:hover {
+  background-color: var(--c-main, #aaf); /* ライバーカラーがほんのり灯る */
+  color:#fff;            /* 文字色もライバーカラーに連動 */
+  border-color: var(--c-main, #aaf);
+  transform: translateY(-3px);                  /* ぴょこっと上に3px浮き上がる */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);   /* 影を少し強めて立体感を出す */
+}
+
+/* 画面が縦に長いスマホなどで、押しやすいように位置を微調整したい場合はここを調整 */
+@media (max-width: 768px) {
+  #scroll-to-top-btn {
+    bottom: 15px;
+    right: 8%;
+    width: 30px;
+    height: 30px;
+    font-size: 0.7rem;
+  }
+}
+
+h4 {
+  display: flex;
+  align-items: center; /* 縦中央揃え */
+  gap: 6px;            /* アイコンと文字の間隔 */
+  color: var(--c-text-main);
+  margin-bottom: 2px !important; /* 見出しのすぐ下の余白を固定 */
+  font-size:14px
+}
+.stream-filter-box {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #d1dce0; /* 枠線 */
+  border-radius: 12px;       /* 角を丸く */
+  background-color: rgba(245, 248, 249, 0.5); /* 薄い背景色で別枠感を強調 */
+}
+
+/* 枠の中のh4は少し小さくしても良いかもしれません */
+.stream-filter-box h4 {
+  margin-top: 0;
+  font-size: 14px;
+  color: var(--c-text-sub);
+}
+.tittya {
+    font-size: 10.5px;}
+  
+/* ===== スイッチ風トグルボタン（カラーパレット対応） ===== */
+#toggleDescBtn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--c-text-sub);
+  background: rgba(255, 255, 255, 0.4);
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+/* ホバー効果 */
+#toggleDescBtn:hover {
+  border-color: var(--c-main);
+  color: var(--c-main-dark);
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== スイッチの土台（背景枠） ===== */
+.switch-slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background-color: var(--c-bg-sub);
+  border-radius: 20px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  flex-shrink: 0;
+}
+
+/* ===== 丸いピン（つまみ） ===== */
+.switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  /* 左右移動のアニメーション */
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#toggleDescBtn.active {
+  border-color: var(--c-kaida);
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--c-main-deep);
+  box-shadow: 0 2px 8px var(--c-kaida-line);
+}
+
+/* 土台の背景色（甲斐田カラー） */
+#toggleDescBtn.active .switch-slider {
+  background-color: var(--c-kaida);
+}
+
+/* 丸いピンを右側にスライド移動 */
+#toggleDescBtn.active .switch-knob {
+  transform: translateX(16px);
+  box-shadow: 0 1px 4px rgba(26, 67, 76, 0.3); /* c-main-deepベースの影 */
+}
