@@ -283,11 +283,11 @@ const pcImages = [
   document.getElementById("hero-pc").src = pcRandom;
 
 // ===== CSV URL =====
-const CSV_URL = "data09131.csv";
+const CSV_URL = "data0924.csv";
   
-const LIVER_CSV_URL = "niji/liver0902.csv";
+const LIVER_CSV_URL = "niji/liver0924.csv";
   
-const STREAM_CSV_URL = "stream0913.csv";
+const STREAM_CSV_URL = "stream0924.csv";
   
 let allSongs=[];
 let streamSongs = [];           
@@ -338,7 +338,7 @@ let searchDateEnd = "";   // ★ここを追加
 const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
 // 「選択されないと表示されない」特別ユニット
 const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];  // 必要に応じて追加
-const streamUnits = ["弾き語り", "カラオケ", "コラボ", "記念・お披露目", "ライブ","演奏のみ","音源協力"];
+const streamUnits =["弾き語り","歌唱のみ","演奏のみ","コラボ","3D（オンライン）", "有観客ライブ","音源協力","アコギ以外","メン限","非公開"];
   
  const unitButtons = () =>
   Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
