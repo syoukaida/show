@@ -1329,17 +1329,31 @@ card.appendChild(meta);
 const links = document.createElement("div");
     links.className = "links";
 
-    if (r.isStream) {
-      // ★配信歌枠のときは、シンプルに配信アーカイブへのボタンだけを設置
-      if(r["サムネ用リンク"]){
-        const a = document.createElement("a");
-        a.href = r["サムネ用リンク"];
-        a.target = "_blank";
-        a.textContent = "配信アーカイブ";
-        links.appendChild(a);
+     if (r.isStream) {
+     if (r["サムネ用リンク"]) {
+      const a = document.createElement("a");
+      const urlString = r["サムネ用リンク"];
+      a.href = urlString;
+      a.target = "_blank";
+
+     try {
+        const hostname = new URL(urlString).hostname;
+
+        if (hostname.includes("youtube.com") || hostname.includes("youtu.be") || hostname.includes("nicovideo.jp") || hostname.includes("nico.ms")) {
+          a.textContent = "配信アーカイブ";
+        } else if (hostname.includes("twitter.com") || hostname.includes("x.com")) {
+          a.textContent = "Twitter";
+        } else {
+          a.textContent = "収録Blu-ray (にじストア)";
+        }
+      } catch (e) {
+        a.textContent = "収録Blu-ray (にじストア)";
       }
+
+      links.appendChild(a);
+    }
     } else {
-      // ★通常曲のときは、元の複雑なリンク生成ロジックを100%そのまま通す
+
       const unitName = r["ユニット"].trim();
       
 // 既存リンク
