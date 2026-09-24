@@ -15,7 +15,10 @@
 
 <link rel="apple-touch-icon" href="images/goldkamon1.png">
     <link rel="stylesheet" href="css/style.css">
-   
+
+   <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9WYKKPF1MH"></script>
 <script>
@@ -25,6 +28,15 @@
 
   gtag('config', 'G-9WYKKPF1MH');
 </script>
+   <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then((reg) => console.log('Service Worker 登録成功:', reg.scope))
+            .catch((err) => console.log('Service Worker 登録失敗:', err));
+        });
+      }
+    </script>
   </head>
 
   <body>
