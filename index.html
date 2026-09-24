@@ -1291,10 +1291,13 @@ if (r.isStream) {
   const hasInstrumental = r["演奏"] && r["演奏"].trim() !== "";
   const instrumentalHtml = hasInstrumental ? `演奏：${r["演奏"].trim()}<br>` : "";
   
- meta.innerHTML = `
+const hasOriginal = r["作詞"] && r["作詞"].trim() !== "";
+  const originalHtml = hasOriginal ? `原曲：${r["作詞"].trim()}<br>` : "";
+
+  meta.innerHTML = `
     ${singersHtml}
-    ${instrumentalHtml}原曲：${r["作詞"]}<br>
-    配信日：${r["公開日"]}
+    ${instrumentalHtml}
+    ${originalHtml}配信日：${r["公開日"]}
   `;
 } else {
 const unitName = r["ユニット"].trim();
