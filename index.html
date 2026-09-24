@@ -847,6 +847,7 @@ Promise.all([
       "配信内容": song["配信内容"] || "",
       "甲斐田歌唱": song["甲斐田歌唱"] || "",
      "演奏": song["演奏"] || "",
+       "コーラス": song["コーラス"] || "",
       "分類": song["分類"] || "",
       isStream: true                     // 配信データである目印
     };
@@ -1022,8 +1023,8 @@ function updateCount(){
     // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
     const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
     const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
-    
-    const involvedLivers = collabLivers.concat(instrumentalLivers);
+    const chorusLivers = song["コーラス"] ? song["コーラス"].split(/[、,]+/).map(s => s.trim()) : []; //
+    const involvedLivers = collabLivers.concat(instrumentalLivers, chorusLivers);
     let isMatch = false;
 
     if (searchMode === 'or') {
@@ -1157,11 +1158,10 @@ let results = targetSongs.filter(song => {
         return false;
     }
   if (selectedLivers.length > 0) {
-    // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
-    const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
+   const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
     const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
-    
-    const involvedLivers = collabLivers.concat(instrumentalLivers);
+    const chorusLivers = song["コーラス"] ? song["コーラス"].split(/[、,]+/).map(s => s.trim()) : []; //
+    const involvedLivers = collabLivers.concat(instrumentalLivers, chorusLivers);
     let isMatch = false;
 
     if (searchMode === 'or') {
@@ -1304,11 +1304,13 @@ const hasOriginal = r["作詞"] && r["作詞"].trim() !== "";
   `;
 } else {
 const unitName = r["ユニット"].trim();
-
+const hasChorus = r["コーラス"] && r["コーラス"].trim() !== "";
+  const chorusHtml = hasChorus ? `コーラス：${r["コーラス"].trim()}<br>` : "";
 if(specialUnits.includes(unitName)){
   // 特別ユニット（歌ってみたなど）
   meta.innerHTML = `
     歌唱：${r["歌唱"]}<br>
+    ${chorusHtml}
     原曲：${r["作詞"].trim()}<br>
     公開日：${r["公開日"]}
   `;
