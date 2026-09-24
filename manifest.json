@@ -1,6 +1,6 @@
 {
-  "name": "マイアプリ",
-  "short_name": "マイアプリ",
+  "name": "甲斐田の曲を紹介だ！",
+  "short_name": "紹介だ！",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
