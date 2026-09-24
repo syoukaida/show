@@ -621,6 +621,7 @@ async function initializeLiverSearch() {
             name: row["名前"] ? row["名前"].trim() : "", 
             kana: row["読み"] ? row["読み"].trim() : "",
             fullKana: row["完全読み"] ? row["完全読み"].trim() : "",
+           unitKana: row["ユニット読み"] ? row["ユニット読み"].trim() : "",
             isGraduated: row["卒業"] === "TRUE",
           isKaidaRelated: row["甲斐田"] === "TRUE",
             // ライバーごとのカラー設定
@@ -662,9 +663,11 @@ function renderSuggestions(filterText = "") {
         const keywords = (l.kana || "").toLowerCase().split(/\s+/); 
         const kanaMatch = keywords.some(keyword => keyword.startsWith(val));
         const fullKanaKeywords = (l.fullKana || "").toLowerCase().split(/\s+/);
-        const fullKanaMatch = fullKanaKeywords.some(keyword => keyword === val);
+const fullKanaMatch = fullKanaKeywords.some(keyword => keyword === val);
+      const unitKeywords = (l.unitKana || "").toLowerCase().split(/\s+/);
+    const unitMatch = unitKeywords.some(keyword => keyword === val);
       
-        return nameMatch || kanaMatch || fullKanaMatch ;
+        return nameMatch || kanaMatch|| fullKanaMatch|| unitMatch;
     });
 
     suggContainer.innerHTML = '';
