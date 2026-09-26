@@ -1465,6 +1465,9 @@ card.querySelectorAll('.links a').forEach(a => {
     a.rel = "noopener noreferrer"; // セキュリティ対策
 });    
   });
+   const cardsContainer = document.getElementById("cards");
+  const targetPosition = cardsContainer.getBoundingClientRect().top + window.pageYOffset - 30; // 30px上に余裕を持たせる
+  window.scrollTo({ top: targetPosition, behavior: "smooth" });
 };
 // ===== リセット処理 =====
 document.getElementById("resetBtn").onclick=()=>{
@@ -1537,6 +1540,7 @@ if (streamBtn) {
   updateRelevanceButton();  // ← 追加（超重要）
 
   updateCount();
+   document.querySelector(".filter-group").scrollIntoView({ behavior: "smooth" });
 };
   
 // 💡 ▲ボタンを押したときに、一番上まで滑らかにスクロールさせる
