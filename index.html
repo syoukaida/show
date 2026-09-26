@@ -357,7 +357,7 @@ let searchDateEnd = "";   // ★ここを追加
 const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
 // 「選択されないと表示されない」特別ユニット
 const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];  // 必要に応じて追加
-const streamUnits =["弾き語り","歌唱のみ","演奏のみ","コラボ","3D（オンライン）", "有観客ライブ","音源協力","アコギ以外","メン限","非公開"];
+const streamUnits =["弾き語り","歌唱のみ","演奏のみ","コラボ","3D(オンライン)", "有観客ライブ","音源協力","アコギ以外","メン限","アーカイブ公開中","円盤収録","非公開(視聴不可)"];
   
  const unitButtons = () =>
   Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
@@ -862,6 +862,7 @@ Promise.all([
       "作詞": song["歌手名"] || "",       // 歌手名 ➔ 歌唱
       "コラボライバー": song["コラボライバー"] || "",
       "サムネ用リンク": song["リンク"] || "",  
+       "円盤リンク": song["円盤リンク"] || "",
       "配信内容": song["配信内容"] || "",
       "甲斐田歌唱": song["甲斐田歌唱"] || "",
      "演奏": song["演奏"] || "",
@@ -1378,6 +1379,13 @@ const links = document.createElement("div");
 
       links.appendChild(a);
     }
+     if (r["円盤リンク"]) {
+        const a2 = document.createElement("a");
+        a2.href = r["円盤リンク"];
+        a2.target = "_blank";
+        a2.textContent = "収録Blu-ray (にじストア)";
+        links.appendChild(a2);
+    }     
     } else {
 
       const unitName = r["ユニット"].trim();
