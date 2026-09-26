@@ -1465,9 +1465,12 @@ card.querySelectorAll('.links a').forEach(a => {
     a.rel = "noopener noreferrer"; // セキュリティ対策
 });    
   });
-   const cardsContainer = document.getElementById("cards");
-  const targetPosition = cardsContainer.getBoundingClientRect().top + window.pageYOffset - 30; // 30px上に余裕を持たせる
-  window.scrollTo({ top: targetPosition, behavior: "smooth" });
+   const sortGroup = document.querySelector(".sort-group");
+  if (sortGroup) {
+    // ソートボタンの上側にちょっとだけ余裕（20px）を持たせて綺麗に着地
+    const targetPosition = sortGroup.getBoundingClientRect().top + window.pageYOffset - 20;
+    window.scrollTo({ top: targetPosition, behavior: "smooth" });
+  }
 };
 // ===== リセット処理 =====
 document.getElementById("resetBtn").onclick=()=>{
