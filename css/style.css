@@ -1569,3 +1569,55 @@ h4 {
   transform: translateX(16px);
   box-shadow: 0 1px 4px rgba(26, 67, 76, 0.3); /* c-main-deepベースの影 */
 }
+/* アコーディオン枠の基本スタイル */
+details.stream-filter-box {
+  border: 1px solid var(--c-kaida, #ccc);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-top: 15px;
+  background-color: rgba(245, 248, 249, 0.8);
+}
+
+/* タイトル部分（クリックできる場所） */
+details.stream-filter-box summary {
+  cursor: pointer;
+  list-style: none; /* デフォルトの矢印を消す（ブラウザ用） */
+  position: relative;
+  user-select: none;
+}
+
+/* Safari用の矢印消し */
+details.stream-filter-box summary::-webkit-details-marker {
+  display: none;
+}
+
+/* h4タグの余白調整（summaryの中に入ったため） */
+details.stream-filter-box summary h4 {
+  display: inline-block;
+  margin: 0;
+  padding-right: 20px;
+}
+
+/* 開閉の目印（右側に「▼」をつける） */
+details.stream-filter-box summary::after {
+  content: "▼";
+  font-size: 0.8rem;
+  color: var(--c-kaida, #666);
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.2s ease;
+}
+
+/* 開いたときに「▲」にするアニメーション */
+details.stream-filter-box[open] summary::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* 中身の余白調整 */
+.stream-filter-content {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--c-kaida, #ccc); /* 開いた時の区切り線 */
+}
