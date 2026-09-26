@@ -1040,7 +1040,7 @@ function updateCount(){
    if (selectedLivers.length > 0) {
     // ★ここ：歌唱と同じ安全な正規表現で「、」と「,」をバラします
     const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
-    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
+    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()).filter(liver => liver !== "甲斐田晴") : [];
     const chorusLivers = song["コーラス"] ? song["コーラス"].split(/[、,]+/).map(s => s.trim()) : []; //
     const involvedLivers = collabLivers.concat(instrumentalLivers, chorusLivers);
     let isMatch = false;
@@ -1177,7 +1177,7 @@ let results = targetSongs.filter(song => {
     }
   if (selectedLivers.length > 0) {
    const collabLivers = song["コラボライバー"] ? song["コラボライバー"].split(/[、,]+/).map(s => s.trim()) : [];
-    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()) : [];
+    const instrumentalLivers = song["演奏"] ? song["演奏"].split(/[、,]+/).map(s => s.trim()).filter(liver => liver !== "甲斐田晴") : [];
     const chorusLivers = song["コーラス"] ? song["コーラス"].split(/[、,]+/).map(s => s.trim()) : []; //
     const involvedLivers = collabLivers.concat(instrumentalLivers, chorusLivers);
     let isMatch = false;
