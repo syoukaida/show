@@ -1359,7 +1359,7 @@ const links = document.createElement("div");
      try {
         const hostname = new URL(urlString).hostname;
 
-        if (hostname.includes("youtube.com") || hostname.includes("youtu.be") || hostname.includes("nicovideo.jp") || hostname.includes("nico.ms")) {
+        if (hostname.includes("youtube.com") || hostname.includes("youtu.be") || hostname.includes("nicovideo.jp") || hostname.includes("nico.ms")||hostname.includes("twitcasting.tv")) {
           a.textContent = "配信アーカイブ";
         } else if (hostname.includes("twitter.com") || hostname.includes("x.com")) {
           a.textContent = "Twitter";
