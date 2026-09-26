@@ -120,16 +120,21 @@
     <button id="unitSelectCover">歌ってみたのみ選択</button>
   </div>
 
-<div class="stream-filter-box">
-  <h4>配信アーカイブを含めて検索（整備中）</h4>
-  <p class="tittya">「コラボ」の項目は整備中<BR>表示する曲数が多いと挙動がおかしくなる可能性があるため、他条件での絞り込みの併用をおすすめします！（日付、曲名、歌手名、コラボライバーで絞り込み可）
+<details class="stream-filter-box">
+  <summary>
+    <h4>配信アーカイブを含めて検索（整備中）</h4>
+  </summary>
+  
+  <div class="stream-filter-content">
+    <p class="tittya">「コラボ」の項目は整備中<BR>表示する曲数が多いと挙動がおかしくなる可能性があるため、他条件での絞り込みの併用をおすすめします！（日付、曲名、歌手名、コラボライバーで絞り込み可）
      <BR>メン限についてはメンバー外から確認できる情報のみ記載</p>
-  <div id="streamUnitButtons" class="group">
-  </div>
-   <div class="unit-mini">
-    <button id="streamunitSelectAll">全選択</button>
-    <button id="streamunitClearAll">全解除</button>
-  </div>
+    <div id="streamUnitButtons" class="group">
+    </div>
+    <div class="unit-mini">
+      <button id="streamunitSelectAll">全選択</button>
+      <button id="streamunitClearAll">全解除</button>
+    </div>
+ 
   <!-- 例：分類フィルターの近くに配置 -->
 <div class="search-mode-selector">
   <label class="mode-btn active">
@@ -140,7 +145,8 @@
   </label>
 </div>
   </div>
-</div>
+</details>
+   
 <div class="filter-group">
 <h2>楽曲情報 <span class="hint">
     ?
