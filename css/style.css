@@ -1481,6 +1481,7 @@ h4 {
   align-items: center; /* 縦中央揃え */
   gap: 6px;            /* アイコンと文字の間隔 */
   color: var(--c-text-main);
+ margin-top: 8px;
   margin-bottom: 2px !important; /* 見出しのすぐ下の余白を固定 */
   font-size:14px
 }
