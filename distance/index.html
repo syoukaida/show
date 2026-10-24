@@ -157,14 +157,14 @@ const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌
       .then(res => res.text())
       .then(text => {
         allSongs = parseCSV(text);
-        initSelectBox();
+        initSongSearch();
       })
       .catch(err => {
         console.error(err);
         document.getElementById("songSelect").innerHTML = '<option>読み込みエラーが発生しました</option>';
       });
 
-  // --- 状態管理・DOM要素 ---
+// --- 状態管理・DOM要素 ---
     const songInput = document.getElementById('song-search-box');
     const songSugg = document.getElementById('song-suggestions');
 
