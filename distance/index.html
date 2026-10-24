@@ -53,12 +53,12 @@
     <h1>雰囲気の近い曲を探す</h1>
     
    <!-- 基準にする曲を選択（サジェスト付き検索ボックス） -->
-   <div class="filter-group">
+  <!-- 基準にする曲を選択（サジェスト付き検索ボックス） -->
+    <div class="filter-group">
       <h2>基準にする曲を選ぶ</h2>
       <div class="song-search-container" style="position: relative;">
-        <input type="text" id="song-search-box" class="search-box" placeholder="曲名や歌手名を入力して選択...">
-        <!-- ★ max-heightを広げて見やすくしました -->
-        <div id="song-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--c-bg-sub); border-radius: 8px; max-height: 380px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 4px;"></div>
+        <input type="text" id="song-search-box" class="search-box" placeholder="曲名を入力して選択...">
+        <div id="song-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--c-bg-sub); border-radius: 8px; max-height: 220px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 4px;"></div>
       </div>
     </div>
 <!-- 活動形態（ユニットなど）で絞り込むボタン -->
