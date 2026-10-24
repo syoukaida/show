@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>甲斐田の曲を紹介だ！ | 甲斐田晴 非公式ファンサイト</title>
+    <meta name="description" content="にじさんじ所属VTuber「甲斐田晴」の楽曲検索・非公式ファンサイトです。">
+    <meta name="keywords" content="甲斐田晴, にじさんじ, VΔLZ, ROF-MAO, 楽曲検索, Vtuber, オリジナル曲">
+    <meta property="og:title" content="甲斐田の曲を紹介だ！ | 甲斐田晴 非公式ファンサイト">
+    <meta property="og:description" content="甲斐田晴の楽曲を検索するための非公式ファンサイトです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://songshow-kaida.com/">
+    <meta property="og:image" content="https://songshow-kaida.com/images/hero_square.png">
+    <link rel="icon" href="images/goldkamon1.png" type="image/png">
+
+<link rel="apple-touch-icon" href="images/goldkamon1.png">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+  <h1><a href="./">甲斐田晴 非公式ファンサイト</a></h1></div>
+
+      <nav class="nav">
+        <a href="../">HOME</a>
+        <a href="playlists/">PLAYLISTS</a>
+        <a href="about/">ABOUT</a>
+        <a href="niji/">NIJI</a>
+      </nav>
+
+      <div class="header-cta">
+        <a href="profile/" class="cta-button">甲斐田晴とは？</a>
+      </div>
+    </div>
+  </header>
+
+    
+ <section class="hero">
+  <picture>
+    <!-- スマホ用 -->
+    <source id="hero-sp" media="(max-width: 768px)">
+    <!-- PC用 -->
+    <img id="hero-pc" alt="メインビジュアル" alt="甲斐田晴楽曲検索サイトのメインビジュアル">
+  </picture>
+</section>
+  <div class="main">
+    <h1>雰囲気の近い曲を探す</h1>
+    
+   <!-- 基準にする曲を選択（サジェスト付き検索ボックス） -->
+   <div class="filter-group">
+      <h2>基準にする曲を選ぶ</h2>
+      <div class="song-search-container" style="position: relative;">
+        <input type="text" id="song-search-box" class="search-box" placeholder="曲名や歌手名を入力して選択...">
+        <!-- ★ max-heightを広げて見やすくしました -->
+        <div id="song-suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--c-bg-sub); border-radius: 8px; max-height: 380px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 4px;"></div>
+      </div>
+    </div>
+<!-- 活動形態（ユニットなど）で絞り込むボタン -->
+    <div class="filter-group">
+      <h2>表示する曲を絞り込む</h2>
+      <!-- 通常ユニット -->
+      <div id="unitButtons" class="group"></div>
+      <!-- 特別ユニット（歌ってみた系） -->
+      <div id="specialUnitButtons" class="group"></div>
+      
+      <div class="unit-mini">
+        <button id="unitSelectAll">全選択</button>
+        <button id="unitClearAll">全解除</button>
+        <button id="unitSelectOriginal">オリジナル曲のみ選択</button>
+        <button id="unitSelectCover">歌ってみたのみ選択</button>
+      </div>
+    </div>
+    <div id="cards"></div>
+  </div>
+
+  <script>
+const spImages = [
+    "images/ヒーロー_sp1.png",
+    "images/ヒーロー_sp2.png",
+    "images/ヒーロー_sp3.png",
+    "images/ヒーロー_sp4.png"
+];
+
+const pcImages = [
+    "images/ヒーロー_pc1.png",
+    "images/ヒーロー_pc2.png",
+    "images/ヒーロー_pc3.png",
+    "images/ヒーロー_pc4.png"
+];
+
+  const spRandom = spImages[Math.floor(Math.random() * spImages.length)];
+  const pcRandom = pcImages[Math.floor(Math.random() * pcImages.length)];
+
+  document.getElementById("hero-sp").srcset = spRandom;
+  document.getElementById("hero-pc").src = pcRandom;
+
+    
+    // ===== CSV URL =====
+    const CSV_URL = "data1015.csv";
+
+    // 比較に使う18個のステータス項目
+    const STATUS_KEYS = [
+      "疾走感", "しっとり・チル", "温かい・優しい", "盛り上がる", "熱い・パワフル",
+      "ワイルド・攻撃的", "爽やか", "明るい・ハッピー", "可愛い・ポップな", "透明感",
+      "クール・かっこいい", "オシャレ・スタイリッシュ", "シリアス・ダーク", "セクシー・色気がある",
+      "切ない・ノスタルジック", "エモーショナル", "壮大・ドラマチック", "クセが強い・ユニーク"
+    ];
+const units = ["個人(ソロ)","VΔLZ","ROF-MAO","全体曲","その他","歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];
+// 「選択されないと表示されない」特別ユニット
+const specialUnits = ["歌ってみた","歌ってみたワンコーラス","歌ってみたShorts"];  // 必要に応じて追加
+ let selectedUnits = new Set();
+    let currentSelectedSong = null; // 現在選ばれている基準の曲
+
+    // ユニットボタンの要素リストを取得
+    const unitButtons = () => Array.from(document.querySelectorAll("#unitButtons .toggle, #specialUnitButtons .toggle"));
+
+    let allSongs = [];
+
+    // ===== サイト本家と同じCSVパース関数 =====
+    function parseCSV(text) {
+      const rows = [];
+      let current = [], value = "", inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c == '"' && text[i + 1] == '"') { value += '"'; i++; }
+        else if (c == '"') inQuotes = !inQuotes;
+        else if (c == ',' && !inQuotes) { current.push(value); value = ""; }
+        else if ((c == '\n' || c == '\r') && !inQuotes) {
+          if (value || value === "") current.push(value);
+          if (current.length > 0) rows.push(current);
+          current = []; value = "";
+          if (c == '\r' && text[i + 1] == '\n') i++;
+        } else value += c;
+      }
+      if (value || value === "") current.push(value);
+      if (current.length > 0) rows.push(current);
+      const headers = rows[0];
+      return rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = row[i] ? row[i].trim() : "");
+        return obj;
+      });
+    }
+
+    // ===== YouTubeサムネイル抽出 =====
+    function youtubeThumb(url){
+      const id = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+      return id ? `https://img.youtube.com/vi/${id[1]}/hqdefault.jpg` : "";
+    }
+
+    // ===== CSV読み込みとセレクトボックス初期化 =====
+    fetch(CSV_URL)
+      .then(res => res.text())
+      .then(text => {
+        allSongs = parseCSV(text);
+        initSelectBox();
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("songSelect").innerHTML = '<option>読み込みエラーが発生しました</option>';
+      });
+
+  // --- 状態管理・DOM要素 ---
+    const songInput = document.getElementById('song-search-box');
+    const songSugg = document.getElementById('song-suggestions');
+
+    // CSV読み込み後の初期化処理
+    function initSongSearch() {
+      songInput.placeholder = "曲名を入力して選択...";
+      songInput.disabled = false;
+    }
+
+    // サジェストを描画する関数
+    function renderSongSuggestions(filterText = "") {
+      const val = filterText.trim().toLowerCase();
+
+      // ユニットが空欄ではない有効な曲から部分一致で絞り込み
+      const matches = allSongs.filter(song => {
+        const unit = song["ユニット"] ? song["ユニット"].trim() : "";
+        if (!song["曲名"] || unit === "") return false;
+        if (val === "") return true; // 未入力時は全件表示（またはお好みで調整可能）
+        return song["曲名"].toLowerCase().includes(val);
+      });
+
+      songSugg.innerHTML = '';
+
+      if (matches.length > 0) {
+        const fragment = document.createDocumentFragment();
+        matches.forEach(song => {
+          const div = document.createElement('div');
+          div.className = 'suggestion-item';
+          div.textContent = song["曲名"];
+          div.style.padding = "10px 14px";
+          div.style.cursor = "pointer";
+          div.style.fontSize = "14px";
+          div.style.borderBottom = "1px solid #f0f0f0";
+          
+          div.onmouseover = () => div.style.background = "var(--c-kaida-bg, #f0f8f9)";
+          div.onmouseout = () => div.style.background = "#fff";
+
+          div.onclick = (e) => {
+            e.stopPropagation();
+            selectSong(song);
+          };
+          fragment.appendChild(div);
+        });
+        songSugg.appendChild(fragment);
+        songSugg.style.display = 'block';
+      } else {
+        songSugg.style.display = 'none';
+      }
+    }
+
+    // 曲が選択されたときの処理
+    function selectSong(song) {
+      songInput.value = song["曲名"];
+      songSugg.style.display = 'none';
+      currentSelectedSong = song;
+      findAndDisplaySimilarSongs(song);
+    }
+
+    // --- イベントリスナーの登録 ---
+    songInput.addEventListener('focus', () => renderSongSuggestions(songInput.value));
+    songInput.addEventListener('input', () => {
+      renderSongSuggestions(songInput.value);
+      // 入力がクリアされたら結果も消す場合
+      if (songInput.value.trim() === "") {
+        currentSelectedSong = null;
+        document.getElementById("cards").innerHTML = "";
+      }
+    });
+
+    // 検索ボックスの外側をクリックしたらサジェストを閉じる
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.song-search-container')) {
+        if (songSugg) songSugg.style.display = 'none';
+      }
+    });
+// ボタン生成関数
+    function createButtons(list, containerId, selectedSet){
+      const container = document.getElementById(containerId);
+      list.forEach(item=>{
+        const btn = document.createElement("div");
+        btn.textContent = item;
+        btn.className = "toggle active"; // 初期状態はすべて選択
+        selectedSet.add(item);
+
+        btn.onclick = ()=>{
+          const isActive = selectedSet.has(item);
+          if(isActive){ 
+            selectedSet.delete(item); 
+            btn.classList.remove("active"); 
+          } else {
+            selectedSet.add(item);
+            btn.classList.add("active");
+          }
+          if(currentSelectedSong) findAndDisplaySimilarSongs(currentSelectedSong);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // 全選択・全解除などのワンタッチボタン
+    document.getElementById("unitSelectAll").onclick = () => {
+      unitButtons().forEach(btn => { selectedUnits.add(btn.textContent); btn.classList.add("active"); });
+      if(currentSelectedSong) findAndDisplaySimilarSongs(currentSelectedSong);
+    };
+
+    document.getElementById("unitClearAll").onclick = () => {
+      unitButtons().forEach(btn => { selectedUnits.delete(btn.textContent); btn.classList.remove("active"); });
+      if(currentSelectedSong) findAndDisplaySimilarSongs(currentSelectedSong);
+    }; 
+
+    document.getElementById("unitSelectOriginal").onclick = () => {
+      unitButtons().forEach(btn => {
+        const name = btn.textContent;
+        if (!specialUnits.includes(name)) { selectedUnits.add(name); btn.classList.add("active"); }
+        else { selectedUnits.delete(name); btn.classList.remove("active"); }
+      });
+      if(currentSelectedSong) findAndDisplaySimilarSongs(currentSelectedSong);
+    };
+
+    document.getElementById("unitSelectCover").onclick = () => {
+      unitButtons().forEach(btn => {
+        const name = btn.textContent;
+        if (specialUnits.includes(name)) { selectedUnits.add(name); btn.classList.add("active"); }
+        else { selectedUnits.delete(name); btn.classList.remove("active"); }
+      });
+      if(currentSelectedSong) findAndDisplaySimilarSongs(currentSelectedSong);
+    };
+   // ボタンを生成
+        createButtons(units.filter(u => !specialUnits.includes(u)), "unitButtons", selectedUnits);
+        createButtons(units.filter(u => specialUnits.includes(u)), "specialUnitButtons", selectedUnits); 
+    // ===== ユークリッド距離計算関数 =====
+    function calculateDistance(songA, songB) {
+      let sumOfSquares = 0;
+      for (const key of STATUS_KEYS) {
+        const valA = Number(songA[key]) || 0;
+        const valB = Number(songB[key]) || 0;
+        const diff = valA - valB;
+        sumOfSquares += diff * diff;
+      }
+      return Math.sqrt(sumOfSquares);
+    }
+
+    // ===== 近い曲を計算してカード表示 =====
+   function findAndDisplaySimilarSongs(targetSong) {
+      currentSelectedSong = targetSong; // 選択中の曲を保持
+      const container = document.getElementById("cards");
+      container.innerHTML = "";
+
+      // ★追加：まず活動形態（ユニット）の選択状態で絞り込む
+      const filteredSongs = allSongs.filter(song => {
+        const unit = song["ユニット"] ? song["ユニット"].trim() : "";
+        return selectedUnits.has(unit);
+      });
+      // 自分以外の曲との距離を計算してソート（上位4件）
+      const ranked = filteredSongs
+        .filter(song => song["曲名"] && song["曲名"] !== targetSong["曲名"])
+        .map(song => ({
+          song: song,
+          distance: calculateDistance(targetSong, song)
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 4);
+
+      ranked.forEach(item => {
+        const r = item.song;
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // サムネイル画像
+        if (r["サムネ用リンク"]){
+          const a = document.createElement("a");
+          a.href = r["サムネ用リンク"];
+          a.target = "_blank";
+
+          const thumb = document.createElement("div");
+          thumb.className = "thumb";
+
+          const img = document.createElement("img");
+          img.src = youtubeThumb(r["サムネ用リンク"]);
+
+          thumb.appendChild(img);
+          a.appendChild(thumb);
+          card.appendChild(a);
+        }
+
+        // 曲名
+        const title = document.createElement("div");
+        title.className = "title";
+        title.textContent = r["曲名"];
+        card.appendChild(title);
+
+        const meta = document.createElement("div");
+meta.className = "meta";
+
+const unitName = r["ユニット"].trim();
+
+if(specialUnits.includes(unitName)){
+  // 特別ユニット（歌ってみたなど）
+  meta.innerHTML = `
+    歌唱：${r["歌唱"]}<br>
+    原曲：${r["作詞"].trim()}<br>
+    公開日：${r["公開日"]}
+  `;
+} else {
+  // 通常ユニット
+  meta.innerHTML = `
+    歌唱：${r["歌唱"]}<br>
+    作詞：${r["作詞"].trim()}<br>
+    作曲：${r["作曲"].trim()}<br>
+    編曲：${r["編曲"].trim()}<br>
+    公開日：${r["公開日"]}
+  `;
+}
+        card.appendChild(meta);
+
+        // リンク類
+        const links = document.createElement("div");
+        links.className = "links";
+
+       if(r["MVリンク"]){
+  const a = document.createElement("a");
+  a.href = r["MVリンク"];
+  a.target = "_blank";
+
+  if (specialUnits.includes(unitName)) {
+    // ★ 歌ってみた系のときは、ユニット名（歌ってみたワンコーラス等）をラベルにする
+    a.textContent = unitName;
+  } else {
+    // それ以外（オリジナル曲など）は、今まで通り「公式MV」とする
+    a.textContent = "公式MV";
+  }
+  links.appendChild(a);
+}
+
+// 3D映像リンク（1, 2, 3すべてに対応）
+const tdLinkKeys = ["3Dリンク", "3Dリンク2", "3Dリンク3"];
+tdLinkKeys.forEach(key => {
+  if(r[key] && r[key].trim() !== ""){
+    const a = document.createElement("a");
+    a.href = r[key];
+    a.target = "_blank";
+    
+    // 「3Dリンク」というキー名の時だけラベルを変える
+    if(key === "3Dリンク") {
+      a.textContent = "3D単体動画";
+    } else {
+      a.textContent = "3Dライブ配信";
+    }
+    
+    links.appendChild(a);
+  }
+});
+// Shorts専用リンク
+if(r["Shortsリンク"]){
+  const a = document.createElement("a");
+  a.href = r["Shortsリンク"];
+  a.target = "_blank";
+  a.textContent = "Shorts";
+  links.appendChild(a);
+}
+if(r["サブスクリンク"]){
+  const a=document.createElement("a");
+  a.href=r["サブスクリンク"];
+  a.target="_blank";
+  a.textContent="サブスク";
+  links.appendChild(a);
+}
+
+    
+// ★ その他リンク（複数対応＋Shortsカウント）
+const otherLinks = [];
+if(r["その他リンク"]) otherLinks.push(r["その他リンク"]);
+if(r["その他2"]) otherLinks.push(r["その他2"]);
+if(r["その他3"]) otherLinks.push(r["その他3"]);
+
+const labelCount = {};
+otherLinks.forEach(url=>{
+  const label = getOtherLinkLabel(url);
+  labelCount[label] = (labelCount[label] || 0) + 1;
+});
+
+otherLinks.forEach(url=>{
+  const baseLabel = getOtherLinkLabel(url);
+  const count = labelCount[baseLabel];
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+
+  if(baseLabel === "Shorts" && count > 1){
+    a.textContent = `Shorts(${count})`;
+  } else {
+    a.textContent = baseLabel;
+  }
+
+  links.appendChild(a);
+});
+
+card.appendChild(links);
+    container.appendChild(card);
+    
+// カード内のすべての<a>タグに、一括で「別タブで開く」設定を付与する（もし漏れがあっても安心）
+card.querySelectorAll('.links a').forEach(a => {
+    a.target = "_blank";
+    a.rel = "noopener noreferrer"; // セキュリティ対策
+});    
+      });
+    }
+  </script>
+
+</body>
+</html>
